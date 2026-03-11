@@ -16,6 +16,8 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const isHome = pathname === "/";
+
   const links = [
     { href: "/", label: "Browse" },
     { href: "/blog", label: "Blog" },
@@ -47,41 +49,43 @@ export default function Nav() {
           height: 56,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: isHome ? "center" : "space-between",
         }}
       >
-        {/* Logo */}
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: "50%",
-              background: `conic-gradient(${RAINBOW.map((c, i) => `${c} ${i * 45}deg ${(i + 1) * 45}deg`).join(", ")})`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
+        {/* Logo - hidden on homepage where it's shown large and centered in the hero */}
+        {!isHome && (
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
             <div
               style={{
-                width: 24,
-                height: 24,
+                width: 32,
+                height: 32,
                 borderRadius: "50%",
-                background: "#F2EDE5",
+                background: `conic-gradient(${RAINBOW.map((c, i) => `${c} ${i * 45}deg ${(i + 1) * 45}deg`).join(", ")})`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                flexShrink: 0,
               }}
             >
-              <span style={{ fontSize: 12 }}>✿</span>
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: "50%",
+                  background: "#F2EDE5",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <span style={{ fontSize: 12 }}>✿</span>
+              </div>
             </div>
-          </div>
-          <span className="font-serif" style={{ fontSize: 20, fontWeight: 700, color: "#1A1610" }}>
-            What&apos;s Bloomin&apos;
-          </span>
-        </Link>
+            <span className="font-serif" style={{ fontSize: 20, fontWeight: 700, color: "#1A1610" }}>
+              What&apos;s Bloomin&apos;
+            </span>
+          </Link>
+        )}
 
         {/* Nav links */}
         <div style={{ display: "flex", gap: 24, alignItems: "center" }}>

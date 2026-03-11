@@ -305,11 +305,43 @@ export default function BrowsePage() {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      {/* ═══ HERO - condensed tagline + search ═══ */}
-      <header className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `20px ${px} 0`, textAlign: "center" }}>
-        <h1 className="font-serif" style={{ fontSize: "clamp(24px, 4vw, 34px)", fontWeight: 400, color: "#3E3628", lineHeight: 1.3, margin: "0 0 6px" }}>
-          Find the perfect bloom <em style={{ fontWeight: 600 }}>for your garden</em>
-        </h1>
+      {/* ═══ HERO - big logo + tagline + search ═══ */}
+      <header className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `32px ${px} 0`, textAlign: "center" }}>
+        {/* Big centered logo */}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16 }}>
+          <div
+            style={{
+              width: 64,
+              height: 64,
+              borderRadius: "50%",
+              background: `conic-gradient(${RAINBOW.map((c, i) => `${c} ${i * 45}deg ${(i + 1) * 45}deg`).join(", ")})`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginBottom: 10,
+            }}
+          >
+            <div
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: "50%",
+                background: "#F2EDE5",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <span style={{ fontSize: 22 }}>✿</span>
+            </div>
+          </div>
+          <h1 className="font-serif" style={{ fontSize: "clamp(32px, 5vw, 44px)", fontWeight: 700, color: "#1A1610", lineHeight: 1.2, margin: 0 }}>
+            What&apos;s Bloomin&apos;
+          </h1>
+        </div>
+        <p className="font-serif" style={{ fontSize: "clamp(17px, 2.5vw, 20px)", fontWeight: 400, color: "#5A4E3E", lineHeight: 1.4, margin: "0 0 4px" }}>
+          Find the perfect bloom for your garden
+        </p>
         <p className="font-mono" style={{ fontSize: 11, color: "#9A8E7E", marginBottom: 16 }}>
           Browse {PLANTS.length}+ flowers, shrubs, and trees. Filter by zone, season, sun, color, and more.
         </p>
