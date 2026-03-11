@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BLOG_POSTS } from "@/lib/blog-posts";
 import { PLANTS, BLOOM_COLOR_HEX, PLANT_TYPE_LABELS } from "@/lib/plants";
+import Footer from "@/app/components/Footer";
 
 export async function generateStaticParams() {
   return BLOG_POSTS.map((p) => ({ slug: p.slug }));
@@ -37,13 +38,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.7 }} />
-
       <article style={{ maxWidth: 720, margin: "0 auto", padding: "40px clamp(18px, 4vw, 44px) 60px" }}>
-        <nav style={{ marginBottom: 32 }}>
-          <Link href="/blog" className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", textDecoration: "none", letterSpacing: 1.5 }}>← ALL POSTS</Link>
-        </nav>
-
         <div style={{ marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 12, marginBottom: 8 }}>
             <span className="font-mono" style={{ fontSize: 9, color: "var(--green)", letterSpacing: 1.5, textTransform: "uppercase" }}>{post.category}</span>
@@ -107,13 +102,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         </div>
       </article>
 
-      <footer style={{ maxWidth: 720, margin: "0 auto", padding: "40px clamp(18px, 4vw, 44px) 0" }}>
-        <div style={{ borderTop: "1px solid rgba(40,32,20,0.08)", paddingTop: 16, paddingBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <Link href="/" className="font-serif" style={{ fontSize: 14, color: "#7A6E5E", textDecoration: "none" }}>What&apos;s Bloomin&apos;</Link>
-          <span className="font-mono" style={{ fontSize: 9, color: "#9A8E7E", letterSpacing: 1.5 }}>US - ZONES 3-11</span>
-        </div>
-      </footer>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.5 }} />
+      <Footer maxWidth={720} />
     </div>
   );
 }

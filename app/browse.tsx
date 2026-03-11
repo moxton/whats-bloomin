@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { lookupZone } from "@/lib/zip-zones";
+import Footer from "@/app/components/Footer";
 import {
   PLANTS, PLANT_TYPE_LABELS, BLOOM_COLOR_HEX, SUN_LABELS, WATER_LABELS, BONUS_LABELS,
   MONTH_NAMES, RAINBOW, formatHeight, getSizeTier,
@@ -11,6 +12,7 @@ import {
 
 const ZONES = [3, 4, 5, 6, 7, 8, 9, 10, 11];
 const CURRENT_MONTH = new Date().getMonth() + 1; // 1-12
+const PAGE_SIZE = 36;
 
 const SEASONS = [
   { id: "early-spring", label: "Early Spring", months: [3], color: "#5A8A5A" },
@@ -40,6 +42,14 @@ const BLOOM_COLORS: { id: BloomColor; label: string; hex: string }[] = [
   { id: "yellow", label: "Yellow", hex: "#C4A430" }, { id: "orange", label: "Orange", hex: "#C47A3A" },
   { id: "red", label: "Red", hex: "#B04A4A" }, { id: "lavender", label: "Lavender", hex: "#A08AB8" },
   { id: "green", label: "Green", hex: "#5A8A5A" },
+];
+
+type SortOption = "a-z" | "z-a" | "bloom" | "zone-range";
+const SORT_OPTIONS: { id: SortOption; label: string }[] = [
+  { id: "a-z", label: "A-Z" },
+  { id: "z-a", label: "Z-A" },
+  { id: "bloom", label: "Earliest Bloom" },
+  { id: "zone-range", label: "Widest Range" },
 ];
 
 function getSeasonForMonth(m: number) { return SEASONS.find((s) => s.months.includes(m))?.id || null; }
@@ -96,7 +106,6 @@ function PlantCard({ plant, index }: { plant: Plant; index: number }) {
             <div key={c} style={{ width: 12, height: 12, borderRadius: "50%", background: BLOOM_COLOR_HEX[c], border: c === "white" ? "1px solid #CCC5B8" : "1px solid rgba(0,0,0,0.06)" }} />
           ))}
         </div>
-        {/* Companion suggestion - always visible */}
         {plant.pairsWith.length > 0 && (
           <p className="font-serif" style={{ fontSize: 13, color: "#8A7E6E", marginTop: 12, fontStyle: "italic" }}>
             Pairs well with {plant.pairsWith.slice(0, 2).join(" and ")}
@@ -125,7 +134,6 @@ function FilterBlock({ label, children, defaultOpen = true }: { label: string; c
 // ═══ BLOOM PREVIEW STRIP ═══
 
 function BloomPreviewStrip({ plants, onSwitchToCalendar }: { plants: Plant[]; onSwitchToCalendar: () => void }) {
-  // Count how many plants bloom each month
   const monthCounts = Array.from({ length: 12 }, (_, i) => {
     return plants.filter((p) => p.bloomMonths.includes(i + 1)).length;
   });
@@ -183,6 +191,13 @@ export default function BrowsePage() {
   const [bonuses, setBonuses] = useState<BonusTrait[]>([]);
   const [search, setSearch] = useState("");
   const [view, setView] = useState<"grid" | "calendar">("grid");
+  const [sortBy, setSortBy] = useState<SortOption>("a-z");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  const filterPanelRef = useRef<HTMLDivElement>(null);
+  const filterSentinelRef = useRef<HTMLDivElement>(null);
 
   function tog<T>(set: React.Dispatch<React.SetStateAction<T[]>>, id: T) {
     set((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
@@ -216,6 +231,21 @@ export default function BrowsePage() {
     });
   }, [zone, types, seasons, colors, sizes, suns, water, soils, bonuses, search]);
 
+  // Sorting
+  const sorted = useMemo(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case "a-z": return arr.sort((a, b) => a.name.localeCompare(b.name));
+      case "z-a": return arr.sort((a, b) => b.name.localeCompare(a.name));
+      case "bloom": return arr.sort((a, b) => Math.min(...a.bloomMonths) - Math.min(...b.bloomMonths));
+      case "zone-range": return arr.sort((a, b) => b.zones.length - a.zones.length);
+      default: return arr;
+    }
+  }, [filtered, sortBy]);
+
+  // Reset visible count when filters change
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [zone, types, seasons, colors, sizes, suns, water, soils, bonuses, search, sortBy]);
+
   const activeCount = (zone ? 1 : 0) + types.length + seasons.length + colors.length + sizes.length + suns.length + (water ? 1 : 0) + soils.length + bonuses.length + (search.trim() ? 1 : 0);
 
   const clearAll = () => { setZone(null); setZipInput(""); setZipResult(null); setTypes([]); setSeasons([]); setColors([]); setSizes([]); setSuns([]); setWater(null); setSoils([]); setBonuses([]); setSearch(""); };
@@ -228,6 +258,27 @@ export default function BrowsePage() {
     }).slice(0, 6);
   }, [zone]);
 
+  // Back to top visibility
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 400);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Auto-collapse filters when scrolled past
+  useEffect(() => {
+    const sentinel = filterSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) setFiltersOpen(false);
+      },
+      { threshold: 0, rootMargin: "-60px 0px 0px 0px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
   const px = "clamp(18px, 4vw, 48px)";
 
   const Pill = ({ active, onClick, label, activeColor, activeBg }: { active: boolean; onClick: () => void; label: string; activeColor?: string; activeBg?: string }) => (
@@ -238,31 +289,29 @@ export default function BrowsePage() {
     <button onClick={onClick} className="font-mono" style={{ fontSize: 12, padding: "7px 14px", border: active ? `1.5px solid ${activeColor || "var(--green)"}` : "1px solid rgba(40,32,20,0.12)", background: active ? `${activeColor || "var(--green)"}12` : "transparent", color: active ? (activeColor || "var(--green)") : "#3E3628", transition: "all 0.2s", cursor: "pointer", textAlign: "left" }}>{label}</button>
   );
 
+  // Active filter summary tags for collapsed bar
+  const filterTags = useMemo(() => {
+    const tags: string[] = [];
+    if (zone) tags.push(`Zone ${zone}`);
+    types.forEach((t) => tags.push(PLANT_TYPE_LABELS[t]));
+    seasons.forEach((s) => { const season = SEASONS.find((x) => x.id === s); if (season) tags.push(season.label); });
+    colors.forEach((c) => tags.push(c.charAt(0).toUpperCase() + c.slice(1)));
+    if (search.trim()) tags.push(`"${search.trim()}"`);
+    return tags;
+  }, [zone, types, seasons, colors, search]);
+
+  const visiblePlants = view === "grid" ? sorted.slice(0, visibleCount) : sorted;
+  const hasMore = view === "grid" && visibleCount < sorted.length;
+
   return (
     <div style={{ minHeight: "100vh" }}>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.7 }} />
-
-      {/* ═══ HEADER - centered stack ═══ */}
-      <header className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `28px ${px} 0`, textAlign: "center" }}>
-        {/* Logo */}
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
-          <div style={{ width: 48, height: 48, borderRadius: "50%", background: `conic-gradient(${RAINBOW.map((c, i) => `${c} ${i * 45}deg ${(i + 1) * 45}deg`).join(", ")})`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "#F2EDE5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span style={{ fontSize: 18 }}>✿</span>
-            </div>
-          </div>
-          <div style={{ textAlign: "center" }}>
-            <Link href="/" className="font-serif" style={{ fontSize: 30, fontWeight: 700, color: "#1A1610", lineHeight: 1, textDecoration: "none" }}>What&apos;s Bloomin&apos;</Link>
-            <div className="font-mono" style={{ fontSize: 10, color: "#9A8E7E", letterSpacing: 1.5, marginTop: 3 }}>SEASONAL PLANT GUIDE</div>
-          </div>
-        </div>
-
-        {/* Tagline */}
+      {/* ═══ HERO - condensed tagline + search ═══ */}
+      <header className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `20px ${px} 0`, textAlign: "center" }}>
         <h1 className="font-serif" style={{ fontSize: "clamp(24px, 4vw, 34px)", fontWeight: 400, color: "#3E3628", lineHeight: 1.3, margin: "0 0 6px" }}>
           Find the perfect bloom <em style={{ fontWeight: 600 }}>for your garden</em>
         </h1>
         <p className="font-mono" style={{ fontSize: 11, color: "#9A8E7E", marginBottom: 16 }}>
-          Browse 200+ flowers, shrubs, and trees. Filter by zone, season, sun, color, and more.
+          Browse {PLANTS.length}+ flowers, shrubs, and trees. Filter by zone, season, sun, color, and more.
         </p>
 
         {/* Search bar */}
@@ -290,104 +339,147 @@ export default function BrowsePage() {
         </div>
       )}
 
-      {/* ═══ FILTERS - progressive disclosure ═══ */}
-      <div className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 16px`, animationDelay: "0.15s" }}>
-        <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.07)", padding: "20px 24px 8px", position: "relative", overflow: "hidden" }}>
-          <div className="rainbow-strip" style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, opacity: 0.3 }} />
-
-          {/* Primary filters - 2 column, always open */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "0 32px" }}>
-            <div>
-              <FilterBlock label="Your Zone">
-                <div style={{ marginBottom: 10 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                    <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
-                    {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
-                  </div>
-                  <details><summary className="font-mono" style={{ fontSize: 10, color: "#A09484", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
-                    <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
-                  </details>
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                  {ZONES.map((z) => (<Pill key={z} active={zone === z} onClick={() => { setZone(zone === z ? null : z); if (zone === z) { setZipInput(""); setZipResult(null); } }} label={`${z}`} />))}
-                </div>
-              </FilterBlock>
-
-              <FilterBlock label="Plant Type">
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {(Object.entries(PLANT_TYPE_LABELS) as [PlantType, string][]).map(([id, label]) => (
-                    <Pill key={id} active={types.includes(id)} onClick={() => tog(setTypes, id)} label={label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
-                  ))}
-                </div>
-              </FilterBlock>
-            </div>
-            <div>
-              <FilterBlock label="Bloom Season">
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {SEASONS.map((s) => (<Pill key={s.id} active={seasons.includes(s.id)} onClick={() => tog(setSeasons, s.id)} label={s.label} activeColor={s.color} activeBg={`${s.color}18`} />))}
-                </div>
-              </FilterBlock>
-
-              <FilterBlock label="Bloom Color">
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-                  {BLOOM_COLORS.map((c) => (
-                    <button key={c.id} onClick={() => tog(setColors, c.id)} title={c.label} style={{ width: 34, height: 34, borderRadius: "50%", background: c.hex, padding: 0, border: colors.includes(c.id) ? "3px solid #1A1610" : c.id === "white" ? "1.5px solid #C8C0B4" : "1.5px solid transparent", transition: "all 0.2s", transform: colors.includes(c.id) ? "scale(1.12)" : "scale(1)", outline: colors.includes(c.id) ? "2px solid rgba(26,22,16,0.12)" : "none", outlineOffset: 3, cursor: "pointer" }} />
-                  ))}
-                </div>
-              </FilterBlock>
-            </div>
+      {/* ═══ COLLAPSED FILTER BAR (sticky) ═══ */}
+      {!filtersOpen && (
+        <div style={{ position: "sticky", top: 56, zIndex: 40, background: "#F2EDE5", borderBottom: "1px solid rgba(40,32,20,0.08)", padding: "10px 0" }}>
+          <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px}`, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <button onClick={() => setFiltersOpen(true)} className="font-mono" style={{ fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "var(--green)", background: "none", border: "1px solid var(--green)", padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+              ▸ Filters {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 10 }}>{activeCount}</span>}
+            </button>
+            {filterTags.slice(0, 4).map((tag, i) => (
+              <span key={i} className="font-mono" style={{ fontSize: 10, color: "#5A4E3E", padding: "4px 10px", background: "rgba(44,68,52,0.06)", border: "1px solid rgba(44,68,52,0.10)" }}>{tag}</span>
+            ))}
+            {filterTags.length > 4 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 4} more</span>}
+            {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer" }}>Clear all</button>}
           </div>
+        </div>
+      )}
 
-          {/* Secondary filters - collapsed by default, single row of labels */}
-          <div style={{ borderTop: "1px solid rgba(40,32,20,0.06)", marginTop: 4, paddingTop: 8 }}>
+      {/* ═══ FILTERS - progressive disclosure ═══ */}
+      <div className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 16px`, animationDelay: "0.15s" }} ref={filterPanelRef}>
+        <div style={{
+          background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.07)", position: "relative", overflow: "hidden",
+          maxHeight: filtersOpen ? 2000 : 0, opacity: filtersOpen ? 1 : 0,
+          transition: "max-height 0.35s ease, opacity 0.25s ease",
+        }}>
+          <div style={{ padding: "20px 24px 8px" }}>
+            <div className="rainbow-strip" style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, opacity: 0.3 }} />
+
+            {/* Collapse button */}
+            <button onClick={() => setFiltersOpen(false)} className="font-mono" style={{ position: "absolute", top: 8, right: 12, fontSize: 10, color: "#A09484", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>Collapse ▴</button>
+
+            {/* Primary filters - 2 column, always open */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "0 32px" }}>
               <div>
-                <FilterBlock label="Sunlight" defaultOpen={false}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {(Object.entries(SUN_LABELS) as [SunLevel, { label: string; sub: string; icon: string }][]).map(([id, s]) => (
-                      <MonoPill key={id} active={suns.includes(id)} onClick={() => tog(setSuns, id)} label={`${s.icon} ${s.label} (${s.sub})`} />
-                    ))}
+                <FilterBlock label="Your Zone">
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
+                      {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
+                    </div>
+                    <details><summary className="font-mono" style={{ fontSize: 10, color: "#A09484", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
+                      <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
+                    </details>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {ZONES.map((z) => (<Pill key={z} active={zone === z} onClick={() => { setZone(zone === z ? null : z); if (zone === z) { setZipInput(""); setZipResult(null); } }} label={`${z}`} />))}
                   </div>
                 </FilterBlock>
-                <FilterBlock label="Water Needs" defaultOpen={false}>
+
+                <FilterBlock label="Plant Type">
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {(Object.entries(WATER_LABELS) as [WaterLevel, { label: string; sub: string }][]).map(([id, w]) => (
-                      <MonoPill key={id} active={water === id} onClick={() => setWater(water === id ? null : id)} label={`💧 ${w.label} (${w.sub})`} activeColor="#5A7A90" />
+                    {(Object.entries(PLANT_TYPE_LABELS) as [PlantType, string][]).map(([id, label]) => (
+                      <Pill key={id} active={types.includes(id)} onClick={() => tog(setTypes, id)} label={label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
                     ))}
                   </div>
                 </FilterBlock>
               </div>
               <div>
-                <FilterBlock label="Height" defaultOpen={false}>
+                <FilterBlock label="Bloom Season">
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {SIZE_TIERS.map((s) => (<MonoPill key={s.id} active={sizes.includes(s.id)} onClick={() => tog(setSizes, s.id)} label={s.label} />))}
+                    {SEASONS.map((s) => (<Pill key={s.id} active={seasons.includes(s.id)} onClick={() => tog(setSeasons, s.id)} label={s.label} activeColor={s.color} activeBg={`${s.color}18`} />))}
                   </div>
                 </FilterBlock>
-                <FilterBlock label="Soil Tolerance" defaultOpen={false}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {SOIL_OPTIONS.map((s) => (<MonoPill key={s.id} active={soils.includes(s.id)} onClick={() => tog(setSoils, s.id)} label={`Tolerates ${s.label}`} activeColor="#8E6E28" />))}
-                  </div>
-                </FilterBlock>
-                <FilterBlock label="Special Traits" defaultOpen={false}>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {(Object.entries(BONUS_LABELS) as [BonusTrait, { label: string; icon: string }][]).map(([id, b]) => (
-                      <MonoPill key={id} active={bonuses.includes(id)} onClick={() => tog(setBonuses, id)} label={`${b.icon} ${b.label}`} />
+
+                <FilterBlock label="Bloom Color">
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+                    {BLOOM_COLORS.map((c) => (
+                      <button key={c.id} onClick={() => tog(setColors, c.id)} title={c.label} style={{ width: 34, height: 34, borderRadius: "50%", background: c.hex, padding: 0, border: colors.includes(c.id) ? "3px solid #1A1610" : c.id === "white" ? "1.5px solid #C8C0B4" : "1.5px solid transparent", transition: "all 0.2s", transform: colors.includes(c.id) ? "scale(1.12)" : "scale(1)", outline: colors.includes(c.id) ? "2px solid rgba(26,22,16,0.12)" : "none", outlineOffset: 3, cursor: "pointer" }} />
                     ))}
                   </div>
                 </FilterBlock>
+              </div>
+            </div>
+
+            {/* Secondary filters - collapsed by default, single row of labels */}
+            <div style={{ borderTop: "1px solid rgba(40,32,20,0.06)", marginTop: 4, paddingTop: 8 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "0 32px" }}>
+                <div>
+                  <FilterBlock label="Sunlight" defaultOpen={false}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {(Object.entries(SUN_LABELS) as [SunLevel, { label: string; sub: string; icon: string }][]).map(([id, s]) => (
+                        <MonoPill key={id} active={suns.includes(id)} onClick={() => tog(setSuns, id)} label={`${s.icon} ${s.label} (${s.sub})`} />
+                      ))}
+                    </div>
+                  </FilterBlock>
+                  <FilterBlock label="Water Needs" defaultOpen={false}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {(Object.entries(WATER_LABELS) as [WaterLevel, { label: string; sub: string }][]).map(([id, w]) => (
+                        <MonoPill key={id} active={water === id} onClick={() => setWater(water === id ? null : id)} label={`💧 ${w.label} (${w.sub})`} activeColor="#5A7A90" />
+                      ))}
+                    </div>
+                  </FilterBlock>
+                </div>
+                <div>
+                  <FilterBlock label="Height" defaultOpen={false}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {SIZE_TIERS.map((s) => (<MonoPill key={s.id} active={sizes.includes(s.id)} onClick={() => tog(setSizes, s.id)} label={s.label} />))}
+                    </div>
+                  </FilterBlock>
+                  <FilterBlock label="Soil Tolerance" defaultOpen={false}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {SOIL_OPTIONS.map((s) => (<MonoPill key={s.id} active={soils.includes(s.id)} onClick={() => tog(setSoils, s.id)} label={`Tolerates ${s.label}`} activeColor="#8E6E28" />))}
+                    </div>
+                  </FilterBlock>
+                  <FilterBlock label="Special Traits" defaultOpen={false}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {(Object.entries(BONUS_LABELS) as [BonusTrait, { label: string; icon: string }][]).map(([id, b]) => (
+                        <MonoPill key={id} active={bonuses.includes(id)} onClick={() => tog(setBonuses, id)} label={`${b.icon} ${b.label}`} />
+                      ))}
+                    </div>
+                  </FilterBlock>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Results bar with bigger view toggle */}
+        {/* Sentinel for IntersectionObserver */}
+        <div ref={filterSentinelRef} style={{ height: 1 }} />
+
+        {/* Results bar with sort + view toggle */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, padding: "0 2px", flexWrap: "wrap", gap: 10 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-            <span className="font-serif" style={{ fontSize: 26, fontWeight: 600 }}>{filtered.length}</span>
-            <span className="font-serif" style={{ fontSize: 17, color: "#5A4E3E" }}>plant{filtered.length !== 1 ? "s" : ""}</span>
-            {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer" }}>Clear all ({activeCount})</button>}
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
+              <span className="font-serif" style={{ fontSize: 26, fontWeight: 600 }}>{sorted.length}</span>
+              <span className="font-serif" style={{ fontSize: 17, color: "#5A4E3E" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
+              {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer" }}>Clear all ({activeCount})</button>}
+            </div>
+            {/* Sort pills */}
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 1.5 }}>SORT</span>
+              {SORT_OPTIONS.map((opt) => (
+                <button key={opt.id} onClick={() => setSortBy(opt.id)} className="font-mono" style={{
+                  fontSize: 10, padding: "4px 10px", cursor: "pointer", transition: "all 0.2s",
+                  border: sortBy === opt.id ? "1px solid var(--green)" : "1px solid rgba(40,32,20,0.10)",
+                  background: sortBy === opt.id ? "rgba(44,68,52,0.08)" : "transparent",
+                  color: sortBy === opt.id ? "var(--green)" : "#5A4E3E",
+                  fontWeight: sortBy === opt.id ? 500 : 400,
+                }}>{opt.label}</button>
+              ))}
+            </div>
           </div>
-          {/* Bigger view toggle */}
+          {/* View toggle */}
           <div style={{ display: "flex", gap: 0, border: "1px solid rgba(40,32,20,0.12)" }}>
             <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 11, padding: "10px 20px", border: "none", background: view === "grid" ? "var(--green)" : "#FDFBF7", color: view === "grid" ? "#EDE8DE" : "#5A4E3E", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s" }}>
               <span style={{ fontSize: 14 }}>▦</span> Browse plants
@@ -397,19 +489,46 @@ export default function BrowsePage() {
             </button>
           </div>
         </div>
+
+        {/* Showing X of Y */}
+        {view === "grid" && sorted.length > PAGE_SIZE && (
+          <p className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", marginTop: 6, padding: "0 2px" }}>
+            Showing {Math.min(visibleCount, sorted.length)} of {sorted.length}
+          </p>
+        )}
       </div>
 
       {/* ═══ CONTENT ═══ */}
       <main style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 80px` }}>
         {/* Bloom preview strip above grid */}
-        {view === "grid" && filtered.length > 0 && (
-          <BloomPreviewStrip plants={filtered} onSwitchToCalendar={() => setView("calendar")} />
+        {view === "grid" && sorted.length > 0 && (
+          <BloomPreviewStrip plants={sorted} onSwitchToCalendar={() => setView("calendar")} />
         )}
 
         {view === "grid" ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 310px), 1fr))", gap: 22 }}>
-            {filtered.map((p, i) => <PlantCard key={p.name} plant={p} index={i} />)}
-          </div>
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 310px), 1fr))", gap: 22 }}>
+              {visiblePlants.map((p, i) => <PlantCard key={p.name} plant={p} index={i} />)}
+            </div>
+            {/* Load more */}
+            {hasMore && (
+              <div style={{ textAlign: "center", marginTop: 32 }}>
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + PAGE_SIZE)}
+                  className="font-mono"
+                  style={{
+                    fontSize: 12, padding: "12px 32px", border: "1px solid var(--green)",
+                    color: "var(--green)", background: "transparent", cursor: "pointer",
+                    transition: "all 0.2s", letterSpacing: 0.5,
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(44,68,52,0.05)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                >
+                  Load more plants ({sorted.length - visibleCount} remaining)
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div style={{ background: "#FDFBF7", overflowX: "auto", border: "1px solid rgba(40,32,20,0.06)" }} className="animate-fade-in">
             <div style={{ display: "grid", gridTemplateColumns: "180px repeat(12, 1fr)", minWidth: 660 }}>
@@ -417,7 +536,7 @@ export default function BrowsePage() {
               {MONTH_NAMES.map((m, mi) => (
                 <div key={m} className="font-serif" style={{ padding: "14px 2px", textAlign: "center", fontSize: 14, color: mi + 1 === CURRENT_MONTH ? "var(--green)" : "#4A3E30", fontWeight: mi + 1 === CURRENT_MONTH ? 700 : 500, borderLeft: "1px solid rgba(40,32,20,0.04)", borderBottom: "1px solid rgba(40,32,20,0.08)", background: mi + 1 === CURRENT_MONTH ? "rgba(44,68,52,0.04)" : "#FDFBF7", position: "sticky", top: 0, zIndex: 2 }}>{m}</div>
               ))}
-              {filtered.map((p) => {
+              {sorted.map((p) => {
                 const pc = BLOOM_COLOR_HEX[p.colors[0]] || "#ccc";
                 return (
                   <div key={p.name} style={{ display: "contents" }}>
@@ -439,7 +558,7 @@ export default function BrowsePage() {
             </div>
           </div>
         )}
-        {filtered.length === 0 && (
+        {sorted.length === 0 && (
           <div className="animate-fade-in" style={{ textAlign: "center", padding: "60px 20px" }}>
             <p className="font-serif" style={{ fontSize: 22, fontWeight: 300, marginBottom: 6 }}>No matches found</p>
             <p className="font-serif" style={{ fontSize: 16, color: "#5A4E3E" }}>{search ? `No plants match "${search}" with your current filters.` : "Try loosening your filters."}</p>
@@ -447,22 +566,21 @@ export default function BrowsePage() {
         )}
       </main>
 
-      {/* ═══ FOOTER ═══ */}
-      <footer style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 0` }}>
-        <div style={{ borderTop: "1px solid rgba(40,32,20,0.08)", paddingTop: 20, paddingBottom: 12, display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 12 }}>
-          <div>
-            <span className="font-serif" style={{ fontSize: 16, color: "#5A4E3E", display: "block", marginBottom: 4 }}>What&apos;s Bloomin&apos;</span>
-            <span className="font-mono" style={{ fontSize: 9, color: "#A09484", letterSpacing: 1 }}>v1.7 - {PLANTS.length} plants - US Zones 3-11</span>
-          </div>
-          <div style={{ display: "flex", gap: 16 }}>
-            <Link href="/blog" className="font-mono" style={{ fontSize: 10, color: "#A09484", textDecoration: "none" }}>Blog</Link>
-            <Link href="/contact" className="font-mono" style={{ fontSize: 10, color: "#A09484", textDecoration: "none" }}>Contact</Link>
-            <Link href="/privacy" className="font-mono" style={{ fontSize: 10, color: "#A09484", textDecoration: "none" }}>Privacy</Link>
-            <Link href="/terms" className="font-mono" style={{ fontSize: 10, color: "#A09484", textDecoration: "none" }}>Terms</Link>
-          </div>
-        </div>
-      </footer>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.5 }} />
+      <Footer />
+
+      {/* ═══ BACK TO TOP ═══ */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        className="font-mono back-to-top"
+        style={{
+          opacity: showBackToTop ? 1 : 0,
+          transform: showBackToTop ? "translateY(0)" : "translateY(12px)",
+          pointerEvents: showBackToTop ? "auto" : "none",
+        }}
+        aria-label="Back to top"
+      >
+        ↑
+      </button>
     </div>
   );
 }

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Metadata } from "next";
+import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions",
@@ -8,11 +8,8 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div style={{ minHeight: "100vh" }}>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.7 }} />
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "40px clamp(18px, 4vw, 44px) 80px" }}>
-        <Link href="/" className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", textDecoration: "none", letterSpacing: 1.5 }}>← BACK</Link>
-
-        <h1 className="font-serif" style={{ fontSize: 36, fontWeight: 600, marginTop: 24, marginBottom: 8 }}>Terms &amp; Conditions</h1>
+        <h1 className="font-serif" style={{ fontSize: 36, fontWeight: 600, marginBottom: 8 }}>Terms &amp; Conditions</h1>
         <p className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", marginBottom: 32 }}>Last updated: March 2026</p>
 
         <div className="font-serif" style={{ fontSize: 17, color: "#332C22", lineHeight: 1.7 }}>
@@ -57,7 +54,8 @@ export default function TermsPage() {
           </p>
         </div>
       </div>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.5 }} />
+
+      <Footer maxWidth={720} />
     </div>
   );
 }

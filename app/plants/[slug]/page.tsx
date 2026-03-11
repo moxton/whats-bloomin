@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Footer from "@/app/components/Footer";
 import {
   PLANTS, PLANT_TYPE_LABELS, BLOOM_COLOR_HEX, SUN_LABELS, WATER_LABELS, BONUS_LABELS,
   MONTH_NAMES, RAINBOW, formatHeight, slugify,
@@ -41,20 +42,10 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.7 }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
 
-      {/* Nav */}
-      <nav style={{ maxWidth: 900, margin: "0 auto", padding: "24px clamp(18px, 4vw, 44px)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Link href="/" className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", textDecoration: "none", letterSpacing: 1.5 }}>
-            ← BACK TO ALL PLANTS
-          </Link>
-        </div>
-      </nav>
-
       {/* Hero */}
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 clamp(18px, 4vw, 44px) 60px" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px clamp(18px, 4vw, 44px) 60px" }}>
         {/* Image placeholder */}
         <div style={{
           height: 300, background: `linear-gradient(160deg, ${pc}10 0%, ${pc}22 100%)`,
@@ -196,20 +187,9 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
             </div>
           </div>
         )}
-
-        {/* Back */}
-        <Link href="/" className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", textDecoration: "underline", textUnderlineOffset: 3 }}>
-          ← Back to all plants
-        </Link>
       </div>
 
-      <footer style={{ maxWidth: 900, margin: "0 auto", padding: "40px clamp(18px, 4vw, 44px) 0" }}>
-        <div style={{ borderTop: "1px solid rgba(40,32,20,0.08)", paddingTop: 16, paddingBottom: 8, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
-          <Link href="/" className="font-serif" style={{ fontSize: 14, color: "#7A6E5E", textDecoration: "none" }}>What&apos;s Bloomin&apos;</Link>
-          <span className="font-mono" style={{ fontSize: 9, color: "#9A8E7E", letterSpacing: 1.5 }}>US - ZONES 3-11</span>
-        </div>
-      </footer>
-      <div className="rainbow-strip" style={{ height: 3, opacity: 0.5 }} />
+      <Footer maxWidth={900} />
     </div>
   );
 }
