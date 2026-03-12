@@ -197,7 +197,6 @@ export default function BrowsePage() {
   const [showBackToTop, setShowBackToTop] = useState(false);
 
   const filterPanelRef = useRef<HTMLDivElement>(null);
-  const filterSentinelRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   function tog<T>(set: React.Dispatch<React.SetStateAction<T[]>>, id: T) {
@@ -266,19 +265,6 @@ export default function BrowsePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Auto-collapse filters only when user scrolls past on desktop (not on mobile where it causes issues)
-  useEffect(() => {
-    const sentinel = filterSentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting && window.innerWidth > 768) setFiltersOpen(false);
-      },
-      { threshold: 0, rootMargin: "-60px 0px 0px 0px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, []);
 
   const px = "clamp(18px, 4vw, 48px)";
 
@@ -372,34 +358,54 @@ export default function BrowsePage() {
         </div>
       )}
 
-      {/* ═══ COLLAPSED FILTER BAR (sticky) ═══ */}
-      {!filtersOpen && (
-        <div style={{ position: "sticky", top: 56, zIndex: 40, background: "#F2EDE5", borderBottom: "1px solid rgba(40,32,20,0.08)", padding: "10px 0" }}>
-          <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px}`, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <button onClick={() => setFiltersOpen(true)} className="font-mono" style={{ fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", color: "var(--green)", background: "none", border: "1px solid var(--green)", padding: "6px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
-              ▸ Filters {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 10 }}>{activeCount}</span>}
-            </button>
-            {filterTags.slice(0, 4).map((tag, i) => (
-              <span key={i} className="font-mono" style={{ fontSize: 10, color: "#5A4E3E", padding: "4px 10px", background: "rgba(44,68,52,0.06)", border: "1px solid rgba(44,68,52,0.10)" }}>{tag}</span>
-            ))}
-            {filterTags.length > 4 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 4} more</span>}
-            {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer" }}>Clear all</button>}
-          </div>
-        </div>
-      )}
+      {/* ═══ FILTER HEADER BAR - full-width toggle, always visible ═══ */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px}` }}>
+        <button
+          onClick={() => setFiltersOpen(!filtersOpen)}
+          style={{
+            width: "100%", cursor: "pointer",
+            background: filtersOpen ? "#FDFBF7" : "#FDFBF7",
+            border: "1px solid rgba(40,32,20,0.07)",
+            borderBottom: filtersOpen ? "none" : "1px solid rgba(40,32,20,0.07)",
+            padding: "14px 20px",
+            display: "flex", alignItems: "center", gap: 12,
+            transition: "all 0.2s",
+          }}
+        >
+          <span className="font-mono" style={{
+            fontSize: 12, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 600,
+            color: "var(--green)",
+            display: "flex", alignItems: "center", gap: 8,
+          }}>
+            <span style={{ fontSize: 10, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
+            Filter Plants
+            {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "2px 8px", fontSize: 10, fontWeight: 600, letterSpacing: 0 }}>{activeCount}</span>}
+          </span>
+          {/* Show active filter tags inline when collapsed */}
+          {!filtersOpen && filterTags.length > 0 && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", flex: 1 }}>
+              {filterTags.slice(0, 5).map((tag, i) => (
+                <span key={i} className="font-mono" style={{ fontSize: 10, color: "#5A4E3E", padding: "3px 10px", background: "rgba(44,68,52,0.06)", border: "1px solid rgba(44,68,52,0.10)" }}>{tag}</span>
+              ))}
+              {filterTags.length > 5 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 5} more</span>}
+            </div>
+          )}
+          {!filtersOpen && activeCount > 0 && (
+            <span
+              onClick={(e) => { e.stopPropagation(); clearAll(); }}
+              className="font-mono"
+              style={{ fontSize: 10, color: "#7A6E5E", textDecoration: "underline", textUnderlineOffset: 3, marginLeft: "auto" }}
+            >Clear all</span>
+          )}
+        </button>
+      </div>
 
       {/* ═══ FILTERS - progressive disclosure ═══ */}
       <div className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 16px`, animationDelay: "0.15s" }} ref={filterPanelRef}>
-        <div style={{
-          background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.07)", position: "relative", overflow: "hidden",
-          maxHeight: filtersOpen ? 2000 : 0, opacity: filtersOpen ? 1 : 0,
-          transition: "max-height 0.35s ease, opacity 0.25s ease",
+        {filtersOpen && <div style={{
+          background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.07)", borderTop: "none", position: "relative", overflow: "hidden",
         }}>
-          <div style={{ padding: "20px 24px 8px" }}>
-            <div className="rainbow-strip" style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, opacity: 0.3 }} />
-
-            {/* Collapse button */}
-            <button onClick={() => setFiltersOpen(false)} className="font-mono" style={{ position: "absolute", top: 8, right: 12, fontSize: 10, color: "#8A7E6E", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>Collapse ▴</button>
+          <div style={{ padding: "16px 24px 8px" }}>
 
             {/* Primary filters - 2 column, always open */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "0 32px" }}>
@@ -485,12 +491,9 @@ export default function BrowsePage() {
               </div>
             </div>
           </div>
-        </div>
+        </div>}
 
-        {/* Sentinel for IntersectionObserver */}
-        <div ref={filterSentinelRef} style={{ height: 1 }} />
-
-        {/* Results bar with sort + view toggle */}
+        {/* Results bar with filter toggle + sort + view toggle */}
         <div ref={resultsRef} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, padding: "0 2px", flexWrap: "wrap", gap: 10, scrollMarginTop: 70 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
