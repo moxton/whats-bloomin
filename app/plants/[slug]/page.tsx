@@ -58,7 +58,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
               <span className="font-serif" style={{ fontSize: 12, letterSpacing: 2, color: pc, textTransform: "uppercase", opacity: 0.5 }}>Image</span>
             </div>
           </div>
-          <div className="font-mono" style={{ position: "absolute", top: 16, left: 16, fontSize: 9, color: "#5A4E3E", background: "rgba(253,251,247,0.9)", padding: "3px 10px", letterSpacing: 0.5 }}>
+          <div className="font-mono" style={{ position: "absolute", top: 16, left: 16, fontSize: 11, color: "#5A4E3E", background: "rgba(253,251,247,0.9)", padding: "3px 10px", letterSpacing: 0.5 }}>
             {PLANT_TYPE_LABELS[plant.type]}
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
         <p className="font-mono" style={{ fontSize: 14, color: "#7A6E5E", fontStyle: "italic", marginBottom: 20 }}>{plant.botanical}</p>
         {/* Variety badge */}
         {plant.isVariety && plant.parentSpecies && (
-          <div className="font-mono" style={{ fontSize: 10, color: "var(--green)", marginBottom: 8 }}>
+          <div className="font-mono" style={{ fontSize: 12, color: "var(--green)", marginBottom: 8 }}>
             <Link href={`/plants/${plant.parentSpecies.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} style={{ color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2 }}>{plant.parentSpecies}</Link> variety
           </div>
         )}
@@ -78,7 +78,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 16, marginBottom: 32 }}>
           {/* Bloom Season */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Bloom Season</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Bloom Season</div>
             <div className="font-serif" style={{ fontSize: 18, fontWeight: 600, color: "#1A1610", marginBottom: 12 }}>{bloomMonthNames[0]} - {bloomMonthNames[bloomMonthNames.length - 1]}</div>
             <div style={{ display: "flex", gap: 3 }}>
               {Array.from({ length: 12 }, (_, i) => (
@@ -86,19 +86,19 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
               ))}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-              {MONTH_NAMES.map((m) => <span key={m} className="font-mono" style={{ fontSize: 7, color: "#8A7E6E" }}>{m[0]}</span>)}
+              {MONTH_NAMES.map((m) => <span key={m} className="font-mono" style={{ fontSize: 9, color: "#8A7E6E" }}>{m[0]}</span>)}
             </div>
           </div>
 
           {/* Sun */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Sun Requirements</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Sun Requirements</div>
             {plant.sun.map((s) => {
               const info = SUN_LABELS[s];
               return (
                 <div key={s} style={{ marginBottom: 6 }}>
                   <span className="font-serif" style={{ fontSize: 16, fontWeight: 500 }}>{info.icon} {info.label}</span>
-                  <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", marginLeft: 8 }}>{info.sub}</span>
+                  <span className="font-mono" style={{ fontSize: 12, color: "#8A7E6E", marginLeft: 8 }}>{info.sub}</span>
                 </div>
               );
             })}
@@ -106,16 +106,16 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
 
           {/* Water */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Water Needs</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Water Needs</div>
             <div className="font-serif" style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{plant.water.charAt(0).toUpperCase() + plant.water.slice(1)}</div>
-            <div className="font-mono" style={{ fontSize: 11, color: "#6A5E4E" }}>{WATER_LABELS[plant.water].sub}</div>
+            <div className="font-mono" style={{ fontSize: 13, color: "#6A5E4E" }}>{WATER_LABELS[plant.water].sub}</div>
           </div>
 
           {/* Size & Zones */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Size & Zones</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Size & Zones</div>
             <div className="font-serif" style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{formatHeight(plant)} tall</div>
-            <div className="font-mono" style={{ fontSize: 11, color: "#6A5E4E" }}>USDA Zones {Math.min(...plant.zones)}-{Math.max(...plant.zones)}</div>
+            <div className="font-mono" style={{ fontSize: 13, color: "#6A5E4E" }}>USDA Zones {Math.min(...plant.zones)}-{Math.max(...plant.zones)}</div>
           </div>
         </div>
 
@@ -123,7 +123,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 16, marginBottom: 40 }}>
           {/* Colors */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Bloom Colors</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Bloom Colors</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {plant.colors.map((c) => (
                 <div key={c} style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -136,7 +136,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
 
           {/* Traits */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Traits</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Traits</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {plant.bonus.map((b) => {
                 const trait = BONUS_LABELS[b];
@@ -148,7 +148,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
           {/* Soil */}
           {plant.soil.length > 0 && (
             <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
-              <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Soil</div>
+              <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Soil</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {plant.soil.map((s) => (
                   <span key={s} className="font-mono" style={{ fontSize: 12, color: "#8E6E28", padding: "5px 14px", border: "1px solid rgba(142,110,40,0.2)", background: "rgba(142,110,40,0.04)" }}>
@@ -163,7 +163,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
         {/* Companion Plants */}
         {companions.length > 0 && (
           <div style={{ marginBottom: 40 }}>
-            <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Pairs Well With</div>
+            <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>Pairs Well With</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 12 }}>
               {companions.map((comp) => {
                 if (!comp) return null;
@@ -179,7 +179,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
                     </div>
                     <div>
                       <div className="font-serif" style={{ fontSize: 16, fontWeight: 600, color: "#1A1610" }}>{comp.name}</div>
-                      <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E" }}>{PLANT_TYPE_LABELS[comp.type]}</div>
+                      <div className="font-mono" style={{ fontSize: 11, color: "#8A7E6E" }}>{PLANT_TYPE_LABELS[comp.type]}</div>
                     </div>
                   </Link>
                 );
