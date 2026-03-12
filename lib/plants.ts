@@ -482,4 +482,52 @@ export const PLANTS: Plant[] = [
   // MORE REGIONAL NATIVES & MISC (v1.9)
   // =====================
   p("Bigtooth Maple","Acer grandidentatum","tree",[4,5],[4,5,6,7,8],["green"],["full-sun","part-sun"],"moderate",["loam","clay"],180,300,["native"],"Mountain West maple with brilliant orange-red fall color and rugged drought tolerance.",["Serviceberry","Rocky Mountain Penstemon","Blue Flax"]),
+
+  // =====================
+  // NAMED VARIETIES BATCH (v2.0)
+  // =====================
+
+  // Peony varieties
+  v("Sarah Bernhardt Peony","Paeonia lactiflora 'Sarah Bernhardt'","perennial",[5,6],[3,4,5,6,7,8],["pink"],["full-sun","part-sun"],"moderate",["clay","loam"],30,36,["deer-resistant","fragrant","cut-flower"],"Fully double, apple-blossom pink blooms so heavy they nod on their stems. The most planted peony in history.",["Iris","Catmint","Allium"],"Peony","Sarah Bernhardt"),
+  v("Festiva Maxima Peony","Paeonia lactiflora 'Festiva Maxima'","perennial",[5,6],[3,4,5,6,7,8],["white","red"],["full-sun","part-sun"],"moderate",["clay","loam"],30,36,["deer-resistant","fragrant","cut-flower"],"Pure white double blooms flecked with crimson at the center. Beloved since 1851 and still unmatched.",["Iris","Salvia","Catmint"],"Peony","Festiva Maxima"),
+  v("Bowl of Beauty Peony","Paeonia lactiflora 'Bowl of Beauty'","perennial",[5,6],[3,4,5,6,7,8],["pink","white"],["full-sun","part-sun"],"moderate",["clay","loam"],28,34,["deer-resistant","fragrant","cut-flower"],"Hot pink outer petals cup a creamy center of narrow petaloids. Dramatic and unmistakable.",["Allium","Catmint","Iris"],"Peony","Bowl of Beauty"),
+
+  // Lavender varieties
+  v("Hidcote Lavender","Lavandula angustifolia 'Hidcote'","perennial",[6,7,8],[5,6,7,8,9],["purple"],["full-sun"],"low",["sandy","poor"],12,18,["pollinator","deer-resistant","fragrant","cut-flower","container","low-maintenance"],"Compact and intensely dark purple. The standard against which all other lavenders are measured.",["Rose","Salvia","Catmint"],"Lavender","Hidcote"),
+  v("Munstead Lavender","Lavandula angustifolia 'Munstead'","perennial",[6,7,8],[5,6,7,8,9],["lavender"],["full-sun"],"low",["sandy","poor"],12,18,["pollinator","deer-resistant","fragrant","cut-flower","container","low-maintenance"],"Earlier blooming and slightly softer purple than Hidcote. Gertrude Jekyll's favorite for a reason.",["Rose","Catmint","Salvia"],"Lavender","Munstead"),
+  v("Phenomenal Lavender","Lavandula x intermedia 'Phenomenal'","perennial",[6,7,8],[5,6,7,8,9],["lavender","purple"],["full-sun"],"low",["sandy","poor"],24,36,["pollinator","deer-resistant","fragrant","cut-flower","low-maintenance"],"Survives humidity and cold that kills other lavenders. Silver foliage stays tight and full.",["Rose","Salvia","Catmint"],"Lavender","Phenomenal"),
+
+  // Catmint varieties
+  v("Walker's Low Catmint","Nepeta x faassenii 'Walker's Low'","perennial",[5,6,7,8,9],[3,4,5,6,7,8,9],["lavender","blue"],["full-sun"],"low",["sandy","poor"],24,30,["deer-resistant","pollinator","low-maintenance","fragrant"],"Perennial Plant of the Year. Billowy lavender-blue spikes that rebloom hard after a shear.",["Rose","Peony","Iris"],"Catmint","Walker's Low"),
+  v("Cat's Meow Catmint","Nepeta x faassenii 'Cat's Meow'","perennial",[5,6,7,8,9],[3,4,5,6,7,8,9],["blue","purple"],["full-sun"],"low",["sandy","poor"],15,20,["deer-resistant","pollinator","low-maintenance","fragrant","container"],"Tidy, dome-shaped habit that never flops open. Stays compact without shearing.",["Rose","Salvia","Lavender"],"Catmint","Cat's Meow"),
+
+  // Astilbe varieties
+  v("Fanal Astilbe","Astilbe x arendsii 'Fanal'","perennial",[6,7],[3,4,5,6,7,8],["red"],["part-sun","part-shade","full-shade"],"high",["loam"],18,24,["deer-resistant","cut-flower"],"The deepest garnet-red of any astilbe. Dark bronze foliage makes those plumes glow.",["Hosta","Bleeding Heart","Foxglove"],"Astilbe","Fanal"),
+  v("Bridal Veil Astilbe","Astilbe x arendsii 'Bridal Veil'","perennial",[6,7],[3,4,5,6,7,8],["white"],["part-sun","part-shade","full-shade"],"high",["loam"],20,28,["deer-resistant","cut-flower"],"Graceful cascading white plumes on dark stems. Luminous in a shady corner.",["Hosta","Japanese Anemone","Coral Bells"],"Astilbe","Bridal Veil"),
+  v("Visions in Pink Astilbe","Astilbe chinensis 'Visions in Pink'","perennial",[7,8],[3,4,5,6,7,8],["pink"],["part-sun","part-shade","full-shade"],"high",["loam","clay"],12,18,["deer-resistant","low-maintenance"],"Compact and more drought-tolerant than most astilbes. Dense, rosy-pink plumes.",["Hosta","Bleeding Heart","Hellebore"],"Astilbe","Visions in Pink"),
+
+  // Iris varieties
+  v("Immortality Iris","Iris germanica 'Immortality'","perennial",[5,6,9],[3,4,5,6,7,8,9],["white"],["full-sun"],"low",["clay","poor"],24,30,["deer-resistant","cut-flower","fragrant","reblooming"],"Reliable rebloomer with pure white ruffled falls. Blooms spring, then again in fall.",["Peony","Salvia","Catmint"],"Iris","Immortality"),
+  v("Beverly Sills Iris","Iris germanica 'Beverly Sills'","perennial",[5,6],[3,4,5,6,7,8,9],["pink"],["full-sun"],"low",["clay","poor"],24,36,["deer-resistant","cut-flower","fragrant"],"Coral-pink blooms with a tangerine beard. Named for the opera star and just as elegant.",["Peony","Catmint","Allium"],"Iris","Beverly Sills"),
+
+  // Salvia varieties
+  v("May Night Salvia","Salvia x sylvestris 'May Night'","perennial",[5,6,7,8],[3,4,5,6,7,8,9],["purple"],["full-sun"],"low",["sandy","poor"],18,24,["pollinator","deer-resistant","low-maintenance","cut-flower"],"Perennial Plant of the Year. Dense indigo-violet spikes that rebloom if deadheaded.",["Rose","Coneflower","Catmint"],"Salvia","May Night"),
+  v("Caradonna Salvia","Salvia x sylvestris 'Caradonna'","perennial",[5,6,7,8],[3,4,5,6,7,8,9],["purple"],["full-sun"],"low",["sandy","poor"],18,30,["pollinator","deer-resistant","low-maintenance","cut-flower"],"Dark purple stems set this apart from every other salvia. Vertical, architectural, electric.",["Rose","Coneflower","Yarrow"],"Salvia","Caradonna"),
+
+  // Daffodil varieties
+  v("King Alfred Daffodil","Narcissus 'King Alfred'","bulb",[3,4],[3,4,5,6,7,8,9],["yellow"],["full-sun","part-sun"],"moderate",["clay","sandy","loam"],14,18,["deer-resistant","pollinator","low-maintenance","cut-flower"],"The classic golden trumpet daffodil. Naturalizes into massive sweeps that return for decades.",["Tulip","Grape Hyacinth","Bleeding Heart"],"Daffodil","King Alfred"),
+  v("Ice Follies Daffodil","Narcissus 'Ice Follies'","bulb",[3,4],[3,4,5,6,7,8,9],["white","yellow"],["full-sun","part-sun"],"moderate",["clay","sandy","loam"],14,18,["deer-resistant","pollinator","low-maintenance","cut-flower"],"White petals frame a wide, ruffled cup that opens yellow and fades to cream. Multiplies fast.",["Tulip","Grape Hyacinth","Crocus"],"Daffodil","Ice Follies"),
+  v("Thalia Daffodil","Narcissus 'Thalia'","bulb",[4,5],[3,4,5,6,7,8,9],["white"],["full-sun","part-sun"],"moderate",["clay","sandy","loam"],12,16,["deer-resistant","pollinator","fragrant","cut-flower"],"Pure white, swept-back petals with two to three blooms per stem. Orchid-like elegance.",["Tulip","Bleeding Heart","Hosta"],"Daffodil","Thalia"),
+
+  // Tulip varieties
+  v("Queen of Night Tulip","Tulipa 'Queen of Night'","bulb",[4,5],[3,4,5,6,7,8],["purple"],["full-sun"],"moderate",["sandy","loam"],22,28,["cut-flower"],"The darkest tulip. Satiny, near-black maroon blooms that look almost unreal in late spring.",["Daffodil","Allium","Grape Hyacinth"],"Tulip","Queen of Night"),
+  v("Apeldoorn Tulip","Tulipa 'Apeldoorn'","bulb",[4,5],[3,4,5,6,7,8],["red","yellow"],["full-sun"],"moderate",["sandy","loam"],18,24,["cut-flower"],"Bold, goblet-shaped Darwin hybrid in scarlet with a black base. Strong stems and long-lasting.",["Daffodil","Grape Hyacinth","Crocus"],"Tulip","Apeldoorn"),
+
+  // Black-Eyed Susan varieties
+  v("Goldsturm Black-Eyed Susan","Rudbeckia fulgida 'Goldsturm'","perennial",[7,8,9,10],[3,4,5,6,7,8,9],["yellow"],["full-sun"],"low",["clay","sandy","poor"],24,30,["pollinator","deer-resistant","low-maintenance","cut-flower"],"The gold standard rudbeckia. Uniform, floriferous, and utterly reliable in any soil.",["Coneflower","Salvia","Aster"],"Black-Eyed Susan","Goldsturm"),
+  v("American Gold Rush Black-Eyed Susan","Rudbeckia 'American Gold Rush'","perennial",[7,8,9,10],[3,4,5,6,7,8,9],["yellow"],["full-sun"],"low",["clay","sandy","poor"],18,24,["pollinator","deer-resistant","low-maintenance","slug-resistant"],"Narrow, fuzzy foliage resists the leaf spot that plagues Goldsturm. A worthy upgrade.",["Coneflower","Catmint","Sedum"],"Black-Eyed Susan","American Gold Rush"),
+
+  // Rose varieties
+  v("Graham Thomas Rose","Rosa 'Graham Thomas'","shrub",[5,6,7,8,9,10],[5,6,7,8,9],["yellow"],["full-sun"],"moderate",["loam","clay"],48,60,["fragrant","cut-flower","pollinator","reblooming"],"Rich golden-yellow cups with an intense tea rose fragrance. David Austin's most famous creation.",["Lavender","Catmint","Salvia"],"Rose","Graham Thomas"),
+  v("Double Delight Rose","Rosa 'Double Delight'","shrub",[5,6,7,8,9],[5,6,7,8,9],["red","white"],["full-sun"],"moderate",["loam","clay"],36,48,["fragrant","cut-flower","pollinator"],"Creamy white petals blush to strawberry red at the edges. Knockout fragrance matches the looks.",["Lavender","Catmint","Salvia"],"Rose","Double Delight"),
 ];
