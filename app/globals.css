@@ -111,6 +111,12 @@ body {
   pointer-events: none;
 }
 
+/* Blooming Now pills */
+.blooming-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
 /* Collapsible filter panel */
 .filter-panel {
   max-height: 2000px;

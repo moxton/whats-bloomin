@@ -330,7 +330,7 @@ export default function BrowsePage() {
           Find the perfect blooms for your garden
         </p>
         <p className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", marginBottom: 16 }}>
-          {PLANTS.length}+ plants. Filter by zone, season, color, and more.
+          {PLANTS.length} plants. Filter by zone, season, color, and more.
         </p>
 
         {/* Search bar */}
@@ -344,15 +344,34 @@ export default function BrowsePage() {
       {/* ═══ SEASONAL URGENCY ═══ */}
       {bloomingNow.length > 0 && (
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
-          <div style={{ background: "rgba(44,68,52,0.04)", border: "1px solid rgba(44,68,52,0.10)", padding: "12px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-            <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, letterSpacing: 1.5 }}>BLOOMING NOW{zone ? ` IN ZONE ${zone}` : ""}</span>
+          <div style={{
+            background: "linear-gradient(135deg, rgba(212,137,155,0.06) 0%, rgba(196,164,48,0.06) 35%, rgba(90,138,90,0.06) 65%, rgba(91,135,168,0.06) 100%)",
+            border: "1px solid rgba(44,68,52,0.10)",
+            padding: "16px 24px 14px",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+          }}>
+            <span className="font-serif" style={{ fontSize: 15, color: "#2C4434", fontWeight: 600, fontStyle: "italic", letterSpacing: 0.5 }}>
+              Blooming Now{zone ? ` in Zone ${zone}` : ""}
+            </span>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
-              {bloomingNow.map((p) => (
-                <Link key={p.slug} href={`/plants/${p.slug}`} className="font-serif" style={{ fontSize: 14, color: "var(--green)", textDecoration: "none", padding: "2px 8px", background: "rgba(44,68,52,0.06)", transition: "background 0.2s" }}>
-                  {p.name}
-                </Link>
-              ))}
-              {bloomingNow.length >= 6 && <button onClick={() => { const season = getSeasonForMonth(CURRENT_MONTH); if (season) setSeasons([season]); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }} className="font-mono" style={{ fontSize: 11, color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2, background: "none", border: "none", cursor: "pointer" }}>See all →</button>}
+              {bloomingNow.map((p) => {
+                const rawColor = p.colors[0] ? BLOOM_COLOR_HEX[p.colors[0]] : "#5A8A5A";
+                const color = rawColor === "#F0ECE4" ? (p.colors[1] ? BLOOM_COLOR_HEX[p.colors[1]] : "#5A8A5A") : rawColor;
+                return (
+                  <Link key={p.slug} href={`/plants/${p.slug}`} className="font-serif blooming-pill" style={{
+                    fontSize: 14, color: color, textDecoration: "none",
+                    padding: "4px 12px",
+                    background: `${color}12`,
+                    border: `1px solid ${color}30`,
+                    borderRadius: 20,
+                    fontWeight: 500,
+                    transition: "all 0.2s",
+                  }}>
+                    {p.name}
+                  </Link>
+                );
+              })}
+              {bloomingNow.length >= 6 && <button onClick={() => { const season = getSeasonForMonth(CURRENT_MONTH); if (season) setSeasons([season]); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }} className="font-mono" style={{ fontSize: 11, color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>See all &#8594;</button>}
             </div>
           </div>
         </div>
