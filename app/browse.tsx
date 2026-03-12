@@ -141,36 +141,36 @@ function BloomPreviewStrip({ plants, onSwitchToCalendar }: { plants: Plant[]; on
   const gaps = monthCounts.map((c, i) => c === 0 ? MONTH_NAMES[i] : null).filter(Boolean);
 
   return (
-    <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.07)", padding: "14px 20px", marginBottom: 14, display: "flex", alignItems: "center", gap: 16 }}>
-      <div style={{ flex: 1 }}>
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 32, marginBottom: 4 }}>
-          {monthCounts.map((count, i) => (
-            <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-              <div style={{
-                width: "100%", borderRadius: 2,
-                height: Math.max(2, (count / maxCount) * 28),
-                background: i + 1 === CURRENT_MONTH
-                  ? "var(--green)"
-                  : count > 0 ? `${RAINBOW[i % RAINBOW.length]}88` : "rgba(40,32,20,0.06)",
-                transition: "height 0.3s",
-              }} />
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", gap: 3 }}>
-          {MONTH_NAMES.map((m, i) => (
-            <span key={m} className="font-mono" style={{ flex: 1, textAlign: "center", fontSize: 8, color: i + 1 === CURRENT_MONTH ? "var(--green)" : "#8A7E6E", fontWeight: i + 1 === CURRENT_MONTH ? 600 : 400 }}>{m}</span>
-          ))}
-        </div>
-        {gaps.length > 0 && gaps.length <= 4 && (
-          <p className="font-mono" style={{ fontSize: 9, color: "#A05830", marginTop: 6 }}>
-            Gap{gaps.length > 1 ? "s" : ""} in coverage: {gaps.join(", ")}
-          </p>
-        )}
+    <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.07)", padding: "14px 20px", marginBottom: 14 }}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 3, height: 32, marginBottom: 4 }}>
+        {monthCounts.map((count, i) => (
+          <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+            <div style={{
+              width: "100%", borderRadius: 2,
+              height: Math.max(2, (count / maxCount) * 28),
+              background: i + 1 === CURRENT_MONTH
+                ? "var(--green)"
+                : count > 0 ? `${RAINBOW[i % RAINBOW.length]}88` : "rgba(40,32,20,0.06)",
+              transition: "height 0.3s",
+            }} />
+          </div>
+        ))}
       </div>
-      <button onClick={onSwitchToCalendar} className="font-mono" style={{ fontSize: 10, color: "var(--green)", background: "none", border: "1px solid var(--green)", padding: "6px 12px", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s" }}>
-        Full calendar &#8594;
-      </button>
+      <div style={{ display: "flex", gap: 3 }}>
+        {MONTH_NAMES.map((m, i) => (
+          <span key={m} className="font-mono" style={{ flex: 1, textAlign: "center", fontSize: 8, color: i + 1 === CURRENT_MONTH ? "var(--green)" : "#8A7E6E", fontWeight: i + 1 === CURRENT_MONTH ? 600 : 400 }}>{m}</span>
+        ))}
+      </div>
+      {gaps.length > 0 && gaps.length <= 4 && (
+        <p className="font-mono" style={{ fontSize: 9, color: "#A05830", marginTop: 6 }}>
+          Gap{gaps.length > 1 ? "s" : ""} in coverage: {gaps.join(", ")}
+        </p>
+      )}
+      <div style={{ textAlign: "center", marginTop: 10, borderTop: "1px solid rgba(40,32,20,0.06)", paddingTop: 10 }}>
+        <button onClick={onSwitchToCalendar} className="font-mono" style={{ fontSize: 11, color: "var(--green)", background: "none", border: "1px solid var(--green)", padding: "8px 24px", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s" }}>
+          Full calendar &#8594;
+        </button>
+      </div>
     </div>
   );
 }
@@ -344,9 +344,9 @@ export default function BrowsePage() {
       {/* ═══ SEASONAL URGENCY ═══ */}
       {bloomingNow.length > 0 && (
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
-          <div style={{ background: "rgba(44,68,52,0.04)", border: "1px solid rgba(44,68,52,0.10)", padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <span className="font-mono" style={{ fontSize: 10, color: "var(--green)", fontWeight: 600, letterSpacing: 1.5, flexShrink: 0 }}>BLOOMING NOW{zone ? ` IN ZONE ${zone}` : ""}</span>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <div style={{ background: "rgba(44,68,52,0.04)", border: "1px solid rgba(44,68,52,0.10)", padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+            <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, letterSpacing: 1.5, flexShrink: 0 }}>BLOOMING NOW{zone ? ` IN ZONE ${zone}` : ""}</span>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", flex: 1 }}>
               {bloomingNow.map((p) => (
                 <Link key={p.slug} href={`/plants/${p.slug}`} className="font-serif" style={{ fontSize: 14, color: "var(--green)", textDecoration: "none", padding: "2px 8px", background: "rgba(44,68,52,0.06)", transition: "background 0.2s" }}>
                   {p.name}
@@ -493,16 +493,18 @@ export default function BrowsePage() {
           </div>
         </div>}
 
-        {/* Results bar with filter toggle + sort + view toggle */}
-        <div ref={resultsRef} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, padding: "0 2px", flexWrap: "wrap", gap: 10, scrollMarginTop: 70 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-              <span className="font-serif" style={{ fontSize: 26, fontWeight: 600 }}>{sorted.length}</span>
-              <span className="font-serif" style={{ fontSize: 17, color: "#5A4E3E" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
-              {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer" }}>Clear all ({activeCount})</button>}
-            </div>
+        {/* Results bar - stacked centered on mobile, row layout on desktop */}
+        <div ref={resultsRef} className="results-bar" style={{ marginTop: 16, scrollMarginTop: 70, display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          {/* Plant count */}
+          <div style={{ display: "flex", alignItems: "baseline", gap: 8, justifyContent: "center" }}>
+            <span className="font-serif" style={{ fontSize: 32, fontWeight: 700 }}>{sorted.length}</span>
+            <span className="font-serif" style={{ fontSize: 20, fontWeight: 600, color: "#3E3628" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
+            {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer" }}>Clear all ({activeCount})</button>}
+          </div>
+          {/* Sort + view toggle row */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
             {/* Sort pills */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
               <span className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 1.5 }}>SORT</span>
               {SORT_OPTIONS.map((opt) => (
                 <button key={opt.id} onClick={() => setSortBy(opt.id)} className="font-mono" style={{
@@ -514,24 +516,23 @@ export default function BrowsePage() {
                 }}>{opt.label}</button>
               ))}
             </div>
+            {/* View toggle */}
+            <div style={{ display: "flex", gap: 0, border: "1px solid rgba(40,32,20,0.12)" }}>
+              <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 11, padding: "10px 20px", border: "none", background: view === "grid" ? "var(--green)" : "#FDFBF7", color: view === "grid" ? "#EDE8DE" : "#5A4E3E", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all 0.2s" }}>
+                <span style={{ fontSize: 14 }}>▦</span> Browse plants
+              </button>
+              <button onClick={() => setView("calendar")} className="font-mono" style={{ fontSize: 11, padding: "10px 20px", border: "none", borderLeft: "1px solid rgba(40,32,20,0.12)", background: view === "calendar" ? "var(--green)" : "#FDFBF7", color: view === "calendar" ? "#EDE8DE" : "#5A4E3E", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, transition: "all 0.2s" }}>
+                <span style={{ fontSize: 14 }}>☰</span> Bloom calendar
+              </button>
+            </div>
           </div>
-          {/* View toggle */}
-          <div style={{ display: "flex", gap: 0, border: "1px solid rgba(40,32,20,0.12)" }}>
-            <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 11, padding: "10px 20px", border: "none", background: view === "grid" ? "var(--green)" : "#FDFBF7", color: view === "grid" ? "#EDE8DE" : "#5A4E3E", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s" }}>
-              <span style={{ fontSize: 14 }}>▦</span> Browse plants
-            </button>
-            <button onClick={() => setView("calendar")} className="font-mono" style={{ fontSize: 11, padding: "10px 20px", border: "none", borderLeft: "1px solid rgba(40,32,20,0.12)", background: view === "calendar" ? "var(--green)" : "#FDFBF7", color: view === "calendar" ? "#EDE8DE" : "#5A4E3E", cursor: "pointer", display: "flex", alignItems: "center", gap: 6, transition: "all 0.2s" }}>
-              <span style={{ fontSize: 14 }}>☰</span> Bloom calendar
-            </button>
-          </div>
+          {/* Showing X of Y */}
+          {view === "grid" && sorted.length > PAGE_SIZE && (
+            <p className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", margin: 0 }}>
+              Showing {Math.min(visibleCount, sorted.length)} of {sorted.length}
+            </p>
+          )}
         </div>
-
-        {/* Showing X of Y */}
-        {view === "grid" && sorted.length > PAGE_SIZE && (
-          <p className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", marginTop: 6, padding: "0 2px" }}>
-            Showing {Math.min(visibleCount, sorted.length)} of {sorted.length}
-          </p>
-        )}
       </div>
 
       {/* ═══ CONTENT ═══ */}
