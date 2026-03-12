@@ -91,7 +91,7 @@ function PlantCard({ plant, index }: { plant: Plant; index: number }) {
         <p className="font-serif" style={{ fontSize: 16, color: "#332C22", margin: "0 0 12px", lineHeight: 1.6 }}>{plant.desc}</p>
         <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
           <span className="font-mono" style={{ fontSize: 11, color: "#5A4E3E" }}>{sunIcons} {plant.sun.map((s) => SUN_LABELS[s]?.label).join(" / ")}</span>
-          <span className="font-mono" style={{ fontSize: 11, color: "#5A4E3E" }}>💧 {plant.water.charAt(0).toUpperCase() + plant.water.slice(1)}</span>
+          <span className="font-mono" style={{ fontSize: 11, color: "#5A4E3E" }}>{plant.water.charAt(0).toUpperCase() + plant.water.slice(1)}</span>
           <span className="font-mono" style={{ fontSize: 11, color: "#5A4E3E" }}>Z{Math.min(...plant.zones)}-{Math.max(...plant.zones)}</span>
         </div>
         <div style={{ height: 1, background: "rgba(40,32,20,0.06)", marginBottom: 12 }} />
@@ -458,7 +458,7 @@ export default function BrowsePage() {
                   <FilterBlock label="Water Needs" defaultOpen={false}>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                       {(Object.entries(WATER_LABELS) as [WaterLevel, { label: string; sub: string }][]).map(([id, w]) => (
-                        <MonoPill key={id} active={water === id} onClick={() => setWater(water === id ? null : id)} label={`💧 ${w.label} (${w.sub})`} activeColor="#5A7A90" />
+                        <MonoPill key={id} active={water === id} onClick={() => setWater(water === id ? null : id)} label={`${w.label} (${w.sub})`} activeColor="#5A7A90" />
                       ))}
                     </div>
                   </FilterBlock>
