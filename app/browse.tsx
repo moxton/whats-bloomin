@@ -122,8 +122,8 @@ function FilterBlock({ label, children, defaultOpen = true }: { label: string; c
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div style={{ paddingBottom: open ? 14 : 0, marginBottom: 4 }}>
-      <button onClick={() => setOpen(!open)} className="font-mono" style={{ fontSize: 11, color: "#5A4E3E", letterSpacing: 2, textTransform: "uppercase", fontWeight: 500, display: "flex", alignItems: "center", gap: 8, marginBottom: open ? 10 : 4, background: "none", border: "none", cursor: "pointer", padding: 0, width: "100%", textAlign: "left" }}>
-        <span style={{ fontSize: 10, color: "#A09484", transition: "transform 0.2s", transform: open ? "rotate(90deg)" : "rotate(0)", display: "inline-block" }}>▸</span>
+      <button onClick={() => setOpen(!open)} className="font-mono" style={{ fontSize: 12, color: "#5A4E3E", letterSpacing: 2, textTransform: "uppercase", fontWeight: 500, display: "flex", alignItems: "center", gap: 8, marginBottom: open ? 10 : 4, background: "none", border: "none", cursor: "pointer", padding: "4px 0", width: "100%", textAlign: "left" }}>
+        <span style={{ fontSize: 10, color: "#8A7E6E", transition: "transform 0.2s", transform: open ? "rotate(90deg)" : "rotate(0)", display: "inline-block" }}>▸</span>
         {label}
       </button>
       {open && children}
@@ -159,7 +159,7 @@ function BloomPreviewStrip({ plants, onSwitchToCalendar }: { plants: Plant[]; on
         </div>
         <div style={{ display: "flex", gap: 3 }}>
           {MONTH_NAMES.map((m, i) => (
-            <span key={m} className="font-mono" style={{ flex: 1, textAlign: "center", fontSize: 8, color: i + 1 === CURRENT_MONTH ? "var(--green)" : "#A09484", fontWeight: i + 1 === CURRENT_MONTH ? 600 : 400 }}>{m}</span>
+            <span key={m} className="font-mono" style={{ flex: 1, textAlign: "center", fontSize: 8, color: i + 1 === CURRENT_MONTH ? "var(--green)" : "#8A7E6E", fontWeight: i + 1 === CURRENT_MONTH ? 600 : 400 }}>{m}</span>
           ))}
         </div>
         {gaps.length > 0 && gaps.length <= 4 && (
@@ -198,6 +198,7 @@ export default function BrowsePage() {
 
   const filterPanelRef = useRef<HTMLDivElement>(null);
   const filterSentinelRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   function tog<T>(set: React.Dispatch<React.SetStateAction<T[]>>, id: T) {
     set((p) => p.includes(id) ? p.filter((x) => x !== id) : [...p, id]);
@@ -265,13 +266,13 @@ export default function BrowsePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Auto-collapse filters when scrolled past
+  // Auto-collapse filters only when user scrolls past on desktop (not on mobile where it causes issues)
   useEffect(() => {
     const sentinel = filterSentinelRef.current;
     if (!sentinel) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) setFiltersOpen(false);
+        if (!entry.isIntersecting && window.innerWidth > 768) setFiltersOpen(false);
       },
       { threshold: 0, rootMargin: "-60px 0px 0px 0px" }
     );
@@ -306,9 +307,9 @@ export default function BrowsePage() {
   return (
     <div style={{ minHeight: "100vh" }}>
       {/* ═══ HERO - big logo + tagline + search ═══ */}
-      <header className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `32px ${px} 0`, textAlign: "center" }}>
+      <header className="animate-fade-in" style={{ maxWidth: 1400, margin: "0 auto", padding: `14px ${px} 0`, textAlign: "center" }}>
         {/* Big centered logo */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16 }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 12 }}>
           <div
             style={{
               width: 64,
@@ -339,18 +340,18 @@ export default function BrowsePage() {
             What&apos;s Bloomin&apos;
           </h1>
         </div>
-        <p className="font-serif" style={{ fontSize: "clamp(17px, 2.5vw, 20px)", fontWeight: 400, color: "#5A4E3E", lineHeight: 1.4, margin: "0 0 4px" }}>
-          Find the perfect bloom for your garden
+        <p className="font-serif" style={{ fontSize: "clamp(20px, 3vw, 24px)", fontWeight: 400, color: "#3E3628", lineHeight: 1.4, margin: "0 0 4px" }}>
+          Find the perfect blooms for your garden
         </p>
-        <p className="font-mono" style={{ fontSize: 11, color: "#9A8E7E", marginBottom: 16 }}>
-          Browse {PLANTS.length}+ flowers, shrubs, and trees. Filter by zone, season, sun, color, and more.
+        <p className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", marginBottom: 16 }}>
+          {PLANTS.length}+ plants. Filter by zone, season, color, and more.
         </p>
 
         {/* Search bar */}
         <div style={{ position: "relative", maxWidth: 520, margin: "0 auto 20px" }}>
-          <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#A09484", pointerEvents: "none" }}>&#x1F50D;</span>
+          <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: "#8A7E6E", pointerEvents: "none" }}>&#x1F50D;</span>
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by name or botanical name..." className="font-serif" style={{ width: "100%", padding: "12px 16px 12px 42px", fontSize: 17, border: "1px solid rgba(40,32,20,0.12)", background: "#FDFBF7", color: "#1A1610", outline: "none", transition: "border 0.2s" }} onFocus={(e) => (e.target.style.borderColor = "var(--green)")} onBlur={(e) => (e.target.style.borderColor = "rgba(40,32,20,0.12)")} />
-          {search && <button onClick={() => setSearch("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "#A09484" }}>&#x2715;</button>}
+          {search && <button onClick={() => setSearch("")} style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", cursor: "pointer", fontSize: 16, color: "#8A7E6E" }}>&#x2715;</button>}
         </div>
       </header>
 
@@ -365,7 +366,7 @@ export default function BrowsePage() {
                   {p.name}
                 </Link>
               ))}
-              {bloomingNow.length >= 6 && <button onClick={() => { const season = getSeasonForMonth(CURRENT_MONTH); if (season) setSeasons([season]); }} className="font-mono" style={{ fontSize: 11, color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2, background: "none", border: "none", cursor: "pointer" }}>See all →</button>}
+              {bloomingNow.length >= 6 && <button onClick={() => { const season = getSeasonForMonth(CURRENT_MONTH); if (season) setSeasons([season]); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }} className="font-mono" style={{ fontSize: 11, color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2, background: "none", border: "none", cursor: "pointer" }}>See all →</button>}
             </div>
           </div>
         </div>
@@ -398,7 +399,7 @@ export default function BrowsePage() {
             <div className="rainbow-strip" style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, opacity: 0.3 }} />
 
             {/* Collapse button */}
-            <button onClick={() => setFiltersOpen(false)} className="font-mono" style={{ position: "absolute", top: 8, right: 12, fontSize: 10, color: "#A09484", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>Collapse ▴</button>
+            <button onClick={() => setFiltersOpen(false)} className="font-mono" style={{ position: "absolute", top: 8, right: 12, fontSize: 10, color: "#8A7E6E", background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>Collapse ▴</button>
 
             {/* Primary filters - 2 column, always open */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))", gap: "0 32px" }}>
@@ -409,7 +410,7 @@ export default function BrowsePage() {
                       <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
                       {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
                     </div>
-                    <details><summary className="font-mono" style={{ fontSize: 10, color: "#A09484", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
+                    <details><summary className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
                       <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
                     </details>
                   </div>
@@ -490,7 +491,7 @@ export default function BrowsePage() {
         <div ref={filterSentinelRef} style={{ height: 1 }} />
 
         {/* Results bar with sort + view toggle */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, padding: "0 2px", flexWrap: "wrap", gap: 10 }}>
+        <div ref={resultsRef} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, padding: "0 2px", flexWrap: "wrap", gap: 10, scrollMarginTop: 70 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
               <span className="font-serif" style={{ fontSize: 26, fontWeight: 600 }}>{sorted.length}</span>

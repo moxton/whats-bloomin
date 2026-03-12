@@ -86,7 +86,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
               ))}
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-              {MONTH_NAMES.map((m) => <span key={m} className="font-mono" style={{ fontSize: 7, color: "#A09484" }}>{m[0]}</span>)}
+              {MONTH_NAMES.map((m) => <span key={m} className="font-mono" style={{ fontSize: 7, color: "#8A7E6E" }}>{m[0]}</span>)}
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
           {/* Water */}
           <div style={{ background: "#FDFBF7", border: "1px solid rgba(40,32,20,0.06)", padding: 20 }}>
             <div className="font-mono" style={{ fontSize: 9, color: "#8A7E6E", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Water Needs</div>
-            <div className="font-serif" style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>💧 {plant.water.charAt(0).toUpperCase() + plant.water.slice(1)}</div>
+            <div className="font-serif" style={{ fontSize: 18, fontWeight: 600, marginBottom: 4 }}>{plant.water.charAt(0).toUpperCase() + plant.water.slice(1)}</div>
             <div className="font-mono" style={{ fontSize: 11, color: "#6A5E4E" }}>{WATER_LABELS[plant.water].sub}</div>
           </div>
 

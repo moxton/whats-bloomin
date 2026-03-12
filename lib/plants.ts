@@ -37,7 +37,7 @@ export const BLOOM_COLOR_HEX: Record<BloomColor, string> = {
 };
 
 export const SUN_LABELS: Record<SunLevel, { label: string; sub: string; icon: string }> = {
-  "full-sun": { label: "Full Sun", sub: "6+ hours direct", icon: "☀" },
+  "full-sun": { label: "Full Sun", sub: "6+ hours direct", icon: "○" },
   "part-sun": { label: "Part Sun", sub: "4-6 hours", icon: "◐" },
   "part-shade": { label: "Part Shade", sub: "2-4 hours", icon: "◑" },
   "full-shade": { label: "Full Shade", sub: "Under 2 hours", icon: "●" },
