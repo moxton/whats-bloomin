@@ -344,9 +344,9 @@ export default function BrowsePage() {
       {/* ═══ SEASONAL URGENCY ═══ */}
       {bloomingNow.length > 0 && (
         <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
-          <div style={{ background: "rgba(44,68,52,0.04)", border: "1px solid rgba(44,68,52,0.10)", padding: "12px 20px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-            <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, letterSpacing: 1.5, flexShrink: 0 }}>BLOOMING NOW{zone ? ` IN ZONE ${zone}` : ""}</span>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", flex: 1 }}>
+          <div style={{ background: "rgba(44,68,52,0.04)", border: "1px solid rgba(44,68,52,0.10)", padding: "12px 20px", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+            <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 600, letterSpacing: 1.5 }}>BLOOMING NOW{zone ? ` IN ZONE ${zone}` : ""}</span>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
               {bloomingNow.map((p) => (
                 <Link key={p.slug} href={`/plants/${p.slug}`} className="font-serif" style={{ fontSize: 14, color: "var(--green)", textDecoration: "none", padding: "2px 8px", background: "rgba(44,68,52,0.06)", transition: "background 0.2s" }}>
                   {p.name}
