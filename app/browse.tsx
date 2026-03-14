@@ -408,12 +408,12 @@ export default function BrowsePage() {
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
         <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, justifyContent: "center", flexWrap: "wrap" }}>
           {[
-            { label: "🦌 Deer Resistant", bonus: "deer-resistant" as BonusTrait },
-            { label: "🦋 Pollinator Garden", bonus: "pollinator" as BonusTrait },
-            { label: "🌿 Low Maintenance", bonus: "low-maintenance" as BonusTrait },
-            { label: "✂️ Cut Flowers", bonus: "cut-flower" as BonusTrait },
-            { label: "🌺 Fragrant", bonus: "fragrant" as BonusTrait },
-            { label: "🏺 Container Friendly", bonus: "container" as BonusTrait },
+            { label: "Deer Resistant", bonus: "deer-resistant" as BonusTrait },
+            { label: "Pollinator Garden", bonus: "pollinator" as BonusTrait },
+            { label: "Low Maintenance", bonus: "low-maintenance" as BonusTrait },
+            { label: "Cut Flowers", bonus: "cut-flower" as BonusTrait },
+            { label: "Fragrant", bonus: "fragrant" as BonusTrait },
+            { label: "Container Friendly", bonus: "container" as BonusTrait },
           ].map((col) => (
             <button
               key={col.bonus}
@@ -422,12 +422,12 @@ export default function BrowsePage() {
                 setBonuses([col.bonus]);
                 setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
               }}
-              className="font-serif"
+              className="font-mono"
               style={{
-                fontSize: 13, padding: "8px 16px",
+                fontSize: 11, padding: "8px 16px", letterSpacing: 0.5, textTransform: "uppercase" as const,
                 background: bonuses.includes(col.bonus) ? "rgba(44,68,52,0.08)" : "#FDFBF7",
                 border: bonuses.includes(col.bonus) ? "1px solid var(--green)" : "1px solid rgba(40,32,20,0.08)",
-                color: bonuses.includes(col.bonus) ? "var(--green)" : "#3E3628",
+                color: bonuses.includes(col.bonus) ? "var(--green)" : "#5A4E3E",
                 cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap",
                 fontWeight: bonuses.includes(col.bonus) ? 600 : 400,
               }}
