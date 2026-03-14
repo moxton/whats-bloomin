@@ -451,93 +451,75 @@ export default function BrowsePage() {
             })}
           </div>
 
-          {/* Divider */}
-          <div style={{ height: 1, background: "rgba(44,68,52,0.06)", margin: "0 -20px", marginBottom: 0 }} />
-
-          {/* Filter toggle */}
-          <button
-            onClick={() => setFiltersOpen(!filtersOpen)}
-            style={{
-              width: "calc(100% + 40px)", margin: "0 -20px", cursor: "pointer",
-              background: "transparent",
-              border: "none", borderBottom: filtersOpen ? "none" : "1px solid rgba(44,68,52,0.06)",
-              padding: "12px 20px",
-              display: "flex", alignItems: "center", gap: 10,
-              transition: "all 0.2s",
-            }}
-          >
-            <span className="font-mono" style={{
-              fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 600,
-              color: "#5A4E3E",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-              <span style={{ fontSize: 9, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
-              Filters
-              {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 9, fontWeight: 600, letterSpacing: 0 }}>{activeCount}</span>}
-            </span>
-            {!filtersOpen && filterTags.length > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap", flex: 1 }}>
-                {filterTags.slice(0, 4).map((tag, i) => (
-                  <span key={i} className="font-mono" style={{ fontSize: 9, color: "#5A4E3E", padding: "2px 8px", background: "rgba(44,68,52,0.06)" }}>{tag}</span>
+          {/* ── Core filters (always visible) ── */}
+          <div ref={filterPanelRef} style={{ padding: "6px 0 0" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
+              <div>
+                <FilterBlock label="Your Zone">
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
+                      {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
+                    </div>
+                    <details><summary className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
+                      <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
+                    </details>
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {ZONES.map((z) => (<Pill key={z} active={zone === z} onClick={() => { setZone(zone === z ? null : z); if (zone === z) { setZipInput(""); setZipResult(null); } }} label={`${z}`} />))}
+                  </div>
+                </FilterBlock>
+              </div>
+              <div>
+                <FilterBlock label="Bloom Season">
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {SEASONS.map((s) => (<Pill key={s.id} active={seasons.includes(s.id)} onClick={() => tog(setSeasons, s.id)} label={s.label} activeColor={s.color} activeBg={`${s.color}18`} />))}
+                  </div>
+                </FilterBlock>
+              </div>
+            </div>
+            {/* Color swatches row */}
+            <FilterBlock label="Bloom Color">
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+                {BLOOM_COLORS.map((c) => (
+                  <button key={c.id} onClick={() => tog(setColors, c.id)} title={c.label} style={{ width: 34, height: 34, borderRadius: "50%", background: c.hex, padding: 0, border: colors.includes(c.id) ? "3px solid #1A1610" : c.id === "white" ? "1.5px solid #C8C0B4" : "1.5px solid transparent", transition: "all 0.2s", transform: colors.includes(c.id) ? "scale(1.12)" : "scale(1)", outline: colors.includes(c.id) ? "2px solid rgba(26,22,16,0.12)" : "none", outlineOffset: 3, cursor: "pointer" }} />
                 ))}
-                {filterTags.length > 4 && <span className="font-mono" style={{ fontSize: 9, color: "#8A7E6E" }}>+{filterTags.length - 4}</span>}
               </div>
-            )}
-            {!filtersOpen && activeCount > 0 && (
-              <span
-                onClick={(e) => { e.stopPropagation(); clearAll(); }}
-                className="font-mono"
-                style={{ fontSize: 9, color: "#7A6E5E", textDecoration: "underline", textUnderlineOffset: 2, marginLeft: "auto" }}
-              >Clear</span>
-            )}
-          </button>
+            </FilterBlock>
+          </div>
 
-          {/* Expanded filters */}
-          {filtersOpen && (
-            <div ref={filterPanelRef} style={{ padding: "12px 0 8px", borderBottom: "1px solid rgba(44,68,52,0.06)" }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
-                <div>
-                  <FilterBlock label="Your Zone">
-                    <div style={{ marginBottom: 10 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                        <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
-                        {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
-                      </div>
-                      <details><summary className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
-                        <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
-                      </details>
-                    </div>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                      {ZONES.map((z) => (<Pill key={z} active={zone === z} onClick={() => { setZone(zone === z ? null : z); if (zone === z) { setZipInput(""); setZipResult(null); } }} label={`${z}`} />))}
-                    </div>
-                  </FilterBlock>
-                  <FilterBlock label="Plant Type">
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {(Object.entries(PLANT_TYPE_LABELS) as [PlantType, string][]).map(([id, label]) => (
-                        <Pill key={id} active={types.includes(id)} onClick={() => tog(setTypes, id)} label={label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
-                      ))}
-                    </div>
-                  </FilterBlock>
-                </div>
-                <div>
-                  <FilterBlock label="Bloom Season">
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                      {SEASONS.map((s) => (<Pill key={s.id} active={seasons.includes(s.id)} onClick={() => tog(setSeasons, s.id)} label={s.label} activeColor={s.color} activeBg={`${s.color}18`} />))}
-                    </div>
-                  </FilterBlock>
-                  <FilterBlock label="Bloom Color">
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-                      {BLOOM_COLORS.map((c) => (
-                        <button key={c.id} onClick={() => tog(setColors, c.id)} title={c.label} style={{ width: 34, height: 34, borderRadius: "50%", background: c.hex, padding: 0, border: colors.includes(c.id) ? "3px solid #1A1610" : c.id === "white" ? "1.5px solid #C8C0B4" : "1.5px solid transparent", transition: "all 0.2s", transform: colors.includes(c.id) ? "scale(1.12)" : "scale(1)", outline: colors.includes(c.id) ? "2px solid rgba(26,22,16,0.12)" : "none", outlineOffset: 3, cursor: "pointer" }} />
-                      ))}
-                    </div>
-                  </FilterBlock>
-                </div>
-              </div>
-              {/* Secondary filters */}
-              <div style={{ borderTop: "1px solid rgba(40,32,20,0.06)", marginTop: 4, paddingTop: 8 }}>
+          {/* ── More Filters (expandable) ── */}
+          <div style={{ borderTop: "1px solid rgba(44,68,52,0.06)" }}>
+            <button
+              onClick={() => setFiltersOpen(!filtersOpen)}
+              className="font-mono"
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                padding: "10px 0", width: "100%", textAlign: "left",
+                display: "flex", alignItems: "center", gap: 6,
+                fontSize: 12, letterSpacing: 2, textTransform: "uppercase", fontWeight: 500,
+                color: "#5A4E3E",
+              }}
+            >
+              <span style={{ fontSize: 10, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
+              More Filters
+              {(types.length + sizes.length + suns.length + (water ? 1 : 0) + soils.length + bonuses.length) > 0 && (
+                <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 9, fontWeight: 600, letterSpacing: 0 }}>
+                  {types.length + sizes.length + suns.length + (water ? 1 : 0) + soils.length + bonuses.length}
+                </span>
+              )}
+            </button>
+            {filtersOpen && (
+              <div style={{ paddingBottom: 8 }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
                   <div>
+                    <FilterBlock label="Plant Type">
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {(Object.entries(PLANT_TYPE_LABELS) as [PlantType, string][]).map(([id, label]) => (
+                          <Pill key={id} active={types.includes(id)} onClick={() => tog(setTypes, id)} label={label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
+                        ))}
+                      </div>
+                    </FilterBlock>
                     <FilterBlock label="Sunlight" defaultOpen={false}>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                         {(Object.entries(SUN_LABELS) as [SunLevel, { label: string; sub: string; icon: string }][]).map(([id, s]) => (
@@ -574,6 +556,16 @@ export default function BrowsePage() {
                   </div>
                 </div>
               </div>
+            )}
+          </div>
+
+          {/* Active filter summary + clear */}
+          {activeCount > 0 && (
+            <div style={{ borderTop: "1px solid rgba(44,68,52,0.06)", padding: "8px 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+              {filterTags.map((tag, i) => (
+                <span key={i} className="font-mono" style={{ fontSize: 10, color: "#5A4E3E", padding: "2px 8px", background: "rgba(44,68,52,0.05)", border: "1px solid rgba(44,68,52,0.08)" }}>{tag}</span>
+              ))}
+              <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", marginLeft: 4 }}>Clear all</button>
             </div>
           )}
 
