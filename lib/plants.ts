@@ -73,6 +73,56 @@ export function slugify(name: string): string {
   return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
 
+// Slugs that have a watercolor image in public/plants/
+const PLANT_IMAGE_SLUGS = new Set([
+  "aeonium","ajuga","allium","american-beautyberry","angelina-sedum","anise-hyssop",
+  "annabelle-hydrangea","arnold-promise-witch-hazel","aster","astilbe","aubrieta",
+  "autumn-joy-sedum","azalea","basket-of-gold","bee-balm","bird-of-paradise",
+  "black-eyed-susan","blanket-flower","bleeding-heart","bloom-a-thon-azalea",
+  "bloomerang-lilac","blue-angel-hosta","blue-false-indigo","blue-fescue",
+  "bobo-hydrangea","borage","bottlebrush-buckeye","bougainvillea","brunnera",
+  "butterfly-bush","calibrachoa","california-lilac","california-poppy","camellia",
+  "cardinal-flower","catmint","celosia","century-plant","chamomile",
+  "cheyenne-spirit-coneflower","chicago-apache-daylily","chives","chrysanthemum",
+  "clematis","cleome","coleus","columbine","coneflower","coral-aloe","coral-bells",
+  "cosmos","crape-myrtle","creeping-phlox","creeping-thyme","crocosmia","crocus",
+  "culinary-sage","dahlia","daylily","delphinium","desert-marigold","dianthus",
+  "dogwood","don-juan-climbing-rose","double-knock-out-rose","draba",
+  "dragon-s-blood-sedum","drift-rose","dwarf-korean-lilac","eastern-redbud",
+  "echeveria","empress-wu-hosta","encore-autumn-azalea","endless-summer-hydrangea",
+  "epimedium","feverfew","firecracker-penstemon","flowering-tobacco","forsythia",
+  "fountain-grass","foxglove","fringe-tree","fritillaria","garden-phlox",
+  "glory-of-the-snow","goatsbeard","golden-rain-tree","goldenrod","grape-hyacinth",
+  "halcyon-hosta","happy-returns-daylily","hawthorn","helenium","hellebore",
+  "hens-and-chicks","honeysuckle","hosta","hyacinth","hydrangea","ice-plant",
+  "impatiens","incrediball-hydrangea","indian-summer-rudbeckia","iris",
+  "jack-in-the-pulpit","jackmanii-clematis","japanese-anemone","japanese-iris",
+  "japanese-maple","japanese-painted-fern","jasmine","joe-pye-weed","june-hosta",
+  "knock-out-rose","korean-lilac","lantana","lavender","lenten-rose","lewisia",
+  "liatris","ligularia","lilac","limelight-hydrangea","little-lime-hydrangea",
+  "lungwort","lupine","magnolia","magnus-coneflower","manzanita","marigold",
+  "marsh-marigold","matilija-poppy","meadow-rue","miscanthus","miss-kim-lilac",
+  "morning-glory","mountain-laurel","nelly-moser-clematis","new-dawn-climbing-rose",
+  "nikko-blue-hydrangea","ninebark","oakleaf-hydrangea","oregano","oregon-grape",
+  "ostrich-fern","pacific-bleeding-heart","patriot-hosta","pelargonium","penstemon",
+  "peony","petunia","pickerelweed","pinky-winky-hydrangea","plumeria",
+  "powwow-wild-berry-coneflower","prairifire-crabapple","purple-de-oro-daylily",
+  "quick-fire-hydrangea","rhododendron","rodgersia","rose","rose-of-sharon",
+  "rosemary","russian-sage","sacred-lotus","salal","salvia","saxifrage",
+  "scarlet-sage","scilla","sea-thrift","sedum","sensation-lilac","serviceberry",
+  "shasta-daisy","smoke-tree","snapdragon","snowdrop","solomon-s-seal","speedwell",
+  "spirea","stella-de-oro-daylily","stewartia","sum-and-substance-hosta","sunflower",
+  "sweet-alyssum","sweet-autumn-clematis","sweet-pea","switchgrass","tall-verbena",
+  "tickseed","toad-lily","trillium","trumpet-gentian","trumpet-vine","tulip",
+  "turtlehead","viburnum","vinca","virginia-bluebell","water-lily","wax-begonia",
+  "weigela","white-swan-coneflower","wild-bergamot","wild-geranium","winter-aconite",
+  "winterberry","wisteria","witch-hazel","yarrow","yucca","zinnia",
+]);
+
+export function plantImageUrl(slug: string): string | null {
+  return PLANT_IMAGE_SLUGS.has(slug) ? `/plants/${slug}.png` : null;
+}
+
 export function formatHeight(p: Plant): string {
   if (p.heightMax >= 36) return `${Math.round(p.heightMin / 12)}-${Math.round(p.heightMax / 12)}'`;
   return `${p.heightMin}-${p.heightMax}"`;

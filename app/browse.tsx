@@ -6,7 +6,7 @@ import { lookupZone } from "@/lib/zip-zones";
 import Footer from "@/app/components/Footer";
 import {
   PLANTS, PLANT_TYPE_LABELS, BLOOM_COLOR_HEX, SUN_LABELS, WATER_LABELS, BONUS_LABELS,
-  MONTH_NAMES, RAINBOW, formatHeight, getSizeTier,
+  MONTH_NAMES, RAINBOW, formatHeight, getSizeTier, plantImageUrl,
   type PlantType, type BloomColor, type SunLevel, type WaterLevel, type SoilType, type BonusTrait, type Plant,
 } from "@/lib/plants";
 
@@ -62,15 +62,20 @@ function PlantCard({ plant, index }: { plant: Plant; index: number }) {
   const typeLabel = PLANT_TYPE_LABELS[plant.type];
   const sunIcons = plant.sun.map((s) => SUN_LABELS[s]?.icon || "").join(" ");
   const isBloomingNow = plant.bloomMonths.includes(CURRENT_MONTH);
+  const imgUrl = plantImageUrl(plant.slug);
 
   return (
     <Link href={`/plants/${plant.slug}`} style={{ display: "block", textDecoration: "none", color: "inherit", background: "#FDFBF7", overflow: "hidden", transition: "all 0.4s cubic-bezier(0.16, 1, 0.3, 1)", boxShadow: "0 1px 3px rgba(40,32,20,0.05), 0 0 0 1px rgba(40,32,20,0.06)", animationDelay: `${Math.min(index, 8) * 40}ms` }} className="animate-card-in hover:-translate-y-1 hover:shadow-lg">
-      <div style={{ height: 180, background: `linear-gradient(160deg, ${pc}10 0%, ${pc}22 100%)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderBottom: "1px solid rgba(40,32,20,0.06)" }}>
-        <div style={{ width: 100, height: 100, border: `1.5px solid ${pc}40`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div style={{ width: 80, height: 80, border: `1px solid ${pc}22`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span className="font-serif" style={{ fontSize: 11, letterSpacing: 1.5, color: pc, textTransform: "uppercase", opacity: 0.5 }}>Image</span>
+      <div style={{ height: 180, background: `linear-gradient(160deg, ${pc}10 0%, ${pc}22 100%)`, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderBottom: "1px solid rgba(40,32,20,0.06)", overflow: "hidden" }}>
+        {imgUrl ? (
+          <img src={imgUrl} alt={plant.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        ) : (
+          <div style={{ width: 100, height: 100, border: `1.5px solid ${pc}40`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 80, height: 80, border: `1px solid ${pc}22`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <span className="font-serif" style={{ fontSize: 11, letterSpacing: 1.5, color: pc, textTransform: "uppercase", opacity: 0.5 }}>Image</span>
+            </div>
           </div>
-        </div>
+        )}
         <span className="font-mono" style={{ position: "absolute", top: 10, left: 12, fontSize: 10, color: "#5A4E3E", background: "rgba(253,251,247,0.88)", backdropFilter: "blur(8px)", padding: "2px 8px" }}>{typeLabel}</span>
         <span className="font-serif" style={{ position: "absolute", top: 10, right: 12, fontSize: 13, color: "#4A3E30", background: "rgba(253,251,247,0.88)", backdropFilter: "blur(8px)", padding: "2px 8px" }}>{bloomRange}</span>
         {isBloomingNow && (

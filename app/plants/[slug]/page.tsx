@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import Footer from "@/app/components/Footer";
 import {
   PLANTS, PLANT_TYPE_LABELS, BLOOM_COLOR_HEX, SUN_LABELS, WATER_LABELS, BONUS_LABELS,
-  MONTH_NAMES, RAINBOW, formatHeight, slugify,
+  MONTH_NAMES, RAINBOW, formatHeight, slugify, plantImageUrl,
 } from "@/lib/plants";
 
 export async function generateStaticParams() {
@@ -29,6 +29,7 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
   if (!plant) notFound();
 
   const pc = BLOOM_COLOR_HEX[plant.colors[0]] || "#ccc";
+  const imgUrl = plantImageUrl(plant.slug);
   const companions = plant.pairsWith.map((name) => PLANTS.find((p) => p.name === name)).filter(Boolean);
   const bloomMonthNames = [...plant.bloomMonths].sort((a, b) => a - b).map((m) => MONTH_NAMES[m - 1]);
 
@@ -46,33 +47,40 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
 
       {/* Hero */}
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "24px clamp(18px, 4vw, 44px) 60px" }}>
-        {/* Image placeholder */}
+        {/* Plant image */}
         <div style={{
-          height: 300, background: `linear-gradient(160deg, ${pc}10 0%, ${pc}22 100%)`,
+          maxWidth: 500, width: "100%", aspectRatio: "1 / 1", margin: "0 auto 32px",
+          background: `linear-gradient(160deg, ${pc}10 0%, ${pc}22 100%)`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          marginBottom: 32, position: "relative",
-          border: "1px solid rgba(40,32,20,0.06)",
+          position: "relative",
+          border: "1px solid rgba(40,32,20,0.06)", overflow: "hidden",
         }}>
-          <div style={{ width: 160, height: 160, border: `1.5px solid ${pc}40`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <div style={{ width: 130, height: 130, border: `1px solid ${pc}22`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <span className="font-serif" style={{ fontSize: 12, letterSpacing: 2, color: pc, textTransform: "uppercase", opacity: 0.5 }}>Image</span>
+          {imgUrl ? (
+            <img src={imgUrl} alt={plant.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          ) : (
+            <div style={{ width: 160, height: 160, border: `1.5px solid ${pc}40`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 130, height: 130, border: `1px solid ${pc}22`, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span className="font-serif" style={{ fontSize: 12, letterSpacing: 2, color: pc, textTransform: "uppercase", opacity: 0.5 }}>Image</span>
+              </div>
             </div>
-          </div>
+          )}
           <div className="font-mono" style={{ position: "absolute", top: 16, left: 16, fontSize: 11, color: "#5A4E3E", background: "rgba(253,251,247,0.9)", padding: "3px 10px", letterSpacing: 0.5 }}>
             {PLANT_TYPE_LABELS[plant.type]}
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="font-serif" style={{ fontSize: "clamp(36px, 6vw, 52px)", fontWeight: 600, marginBottom: 4, lineHeight: 1.1 }}>{plant.name}</h1>
-        <p className="font-mono" style={{ fontSize: 14, color: "#7A6E5E", fontStyle: "italic", marginBottom: 20 }}>{plant.botanical}</p>
-        {/* Variety badge */}
-        {plant.isVariety && plant.parentSpecies && (
-          <div className="font-mono" style={{ fontSize: 12, color: "var(--green)", marginBottom: 8 }}>
-            <Link href={`/plants/${plant.parentSpecies.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} style={{ color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2 }}>{plant.parentSpecies}</Link> variety
-          </div>
-        )}
-        <p className="font-serif" style={{ fontSize: 19, color: "#332C22", lineHeight: 1.65, maxWidth: 640, marginBottom: 32 }}>{plant.desc}</p>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <h1 className="font-serif" style={{ fontSize: "clamp(36px, 6vw, 52px)", fontWeight: 600, marginBottom: 4, lineHeight: 1.1 }}>{plant.name}</h1>
+          <p className="font-mono" style={{ fontSize: 14, color: "#7A6E5E", fontStyle: "italic", marginBottom: 20 }}>{plant.botanical}</p>
+          {/* Variety badge */}
+          {plant.isVariety && plant.parentSpecies && (
+            <div className="font-mono" style={{ fontSize: 12, color: "var(--green)", marginBottom: 8 }}>
+              <Link href={`/plants/${plant.parentSpecies.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`} style={{ color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2 }}>{plant.parentSpecies}</Link> variety
+            </div>
+          )}
+          <p className="font-serif" style={{ fontSize: 19, color: "#332C22", lineHeight: 1.65, maxWidth: 640, margin: "0 auto" }}>{plant.desc}</p>
+        </div>
 
         {/* Quick stats - 2x2 grid */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 340px), 1fr))", gap: 16, marginBottom: 32 }}>
