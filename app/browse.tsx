@@ -411,115 +411,91 @@ export default function BrowsePage() {
           border: "1px solid rgba(44,68,52,0.08)",
           padding: "20px 20px 0",
         }}>
-          {/* Section title */}
-          <div style={{ textAlign: "center", marginBottom: 14 }}>
+          {/* Section title + filter toggle inline */}
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 16, marginBottom: 10 }}>
             <span className="font-serif" style={{ fontSize: 22, color: "#2C4434", fontWeight: 700, fontStyle: "italic" }}>
               Browse All
             </span>
-          </div>
-
-          {/* Collections row */}
-          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", marginBottom: 14 }}>
-            {[
-              { label: "Deer Resistant", bonus: "deer-resistant" as BonusTrait },
-              { label: "Pollinator Garden", bonus: "pollinator" as BonusTrait },
-              { label: "Low Maintenance", bonus: "low-maintenance" as BonusTrait },
-              { label: "Cut Flowers", bonus: "cut-flower" as BonusTrait },
-              { label: "Fragrant", bonus: "fragrant" as BonusTrait },
-              { label: "Container Friendly", bonus: "container" as BonusTrait },
-            ].map((col) => {
-              const isActive = bonuses.length === 1 && bonuses.includes(col.bonus);
-              return (
-                <button
-                  key={col.bonus}
-                  onClick={() => {
-                    if (isActive) { clearAll(); } else { clearAll(); setBonuses([col.bonus]); }
-                  }}
-                  className="font-serif"
-                  style={{
-                    fontSize: 13, padding: "5px 12px",
-                    background: isActive ? "var(--green)" : "transparent",
-                    border: "none", borderBottom: isActive ? "2px solid var(--green)" : "1px solid rgba(40,32,20,0.15)",
-                    color: isActive ? "#EDE8DE" : "#5A4E3E",
-                    cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap",
-                    fontWeight: isActive ? 600 : 400,
-                  }}
-                >
-                  {col.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* ── Core filters (always visible) ── */}
-          <div ref={filterPanelRef} style={{ padding: "6px 0 0" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
-              <div>
-                <FilterBlock label="Your Zone">
-                  <div style={{ marginBottom: 10 }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                      <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
-                      {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
-                    </div>
-                    <details><summary className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
-                      <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
-                    </details>
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
-                    {ZONES.map((z) => (<Pill key={z} active={zone === z} onClick={() => { setZone(zone === z ? null : z); if (zone === z) { setZipInput(""); setZipResult(null); } }} label={`${z}`} />))}
-                  </div>
-                </FilterBlock>
-              </div>
-              <div>
-                <FilterBlock label="Bloom Season">
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                    {SEASONS.map((s) => (<Pill key={s.id} active={seasons.includes(s.id)} onClick={() => tog(setSeasons, s.id)} label={s.label} activeColor={s.color} activeBg={`${s.color}18`} />))}
-                  </div>
-                </FilterBlock>
-              </div>
-            </div>
-            {/* Color swatches row */}
-            <FilterBlock label="Bloom Color">
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
-                {BLOOM_COLORS.map((c) => (
-                  <button key={c.id} onClick={() => tog(setColors, c.id)} title={c.label} style={{ width: 34, height: 34, borderRadius: "50%", background: c.hex, padding: 0, border: colors.includes(c.id) ? "3px solid #1A1610" : c.id === "white" ? "1.5px solid #C8C0B4" : "1.5px solid transparent", transition: "all 0.2s", transform: colors.includes(c.id) ? "scale(1.12)" : "scale(1)", outline: colors.includes(c.id) ? "2px solid rgba(26,22,16,0.12)" : "none", outlineOffset: 3, cursor: "pointer" }} />
-                ))}
-              </div>
-            </FilterBlock>
-          </div>
-
-          {/* ── More Filters (expandable) ── */}
-          <div style={{ borderTop: "1px solid rgba(44,68,52,0.06)" }}>
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
               className="font-mono"
               style={{
                 background: "none", border: "none", cursor: "pointer",
-                padding: "10px 0", width: "100%", textAlign: "left",
-                display: "flex", alignItems: "center", gap: 6,
-                fontSize: 12, letterSpacing: 2, textTransform: "uppercase", fontWeight: 500,
-                color: "#5A4E3E",
+                display: "flex", alignItems: "center", gap: 5,
+                fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500,
+                color: filtersOpen ? "var(--green)" : "#8A7E6E",
+                padding: "2px 0",
+                borderBottom: filtersOpen ? "1.5px solid var(--green)" : "1px solid transparent",
+                transition: "all 0.2s",
               }}
             >
-              <span style={{ fontSize: 10, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
-              More Filters
-              {(types.length + sizes.length + suns.length + (water ? 1 : 0) + soils.length + bonuses.length) > 0 && (
-                <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 9, fontWeight: 600, letterSpacing: 0 }}>
-                  {types.length + sizes.length + suns.length + (water ? 1 : 0) + soils.length + bonuses.length}
-                </span>
-              )}
+              <span style={{ fontSize: 9, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
+              Filters
+              {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 9, fontWeight: 600, letterSpacing: 0 }}>{activeCount}</span>}
             </button>
-            {filtersOpen && (
-              <div style={{ paddingBottom: 8 }}>
+          </div>
+
+          {/* ── Filters panel (expandable) ── */}
+          {filtersOpen && (
+            <div ref={filterPanelRef} style={{ borderTop: "1px solid rgba(44,68,52,0.06)", padding: "12px 0 4px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
+                <div>
+                  <FilterBlock label="Your Zone">
+                    <div style={{ marginBottom: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                        <input type="text" value={zipInput} onChange={(e) => handleZipChange(e.target.value)} placeholder="Enter zip code" className="font-mono" style={{ width: 140, padding: "7px 12px", fontSize: 13, border: "1px solid rgba(40,32,20,0.15)", background: "#fff", color: "#1A1610", outline: "none" }} />
+                        {zipResult && <span className="font-mono" style={{ fontSize: 12, color: "var(--green)", fontWeight: 500 }}>{zipResult.region} - Zone {zipResult.zone}{zipResult.half}</span>}
+                      </div>
+                      <details><summary className="font-mono" style={{ fontSize: 10, color: "#8A7E6E", cursor: "pointer", listStyle: "none" }}><span style={{ textDecoration: "underline", textUnderlineOffset: 2 }}>What are zones?</span></summary>
+                        <p className="font-serif" style={{ fontSize: 14, color: "#6A5E4E", lineHeight: 1.55, marginTop: 6, padding: "10px 14px", background: "rgba(40,32,20,0.03)", border: "1px solid rgba(40,32,20,0.06)" }}>USDA hardiness zones tell you what survives winter where you live. Zone 3 is coldest (northern Minnesota), Zone 11 is warmest (Hawaii, south Florida coast). Most of the US is zones 5-8. Enter your zip code above or pick your zone manually.</p>
+                      </details>
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {ZONES.map((z) => (<Pill key={z} active={zone === z} onClick={() => { setZone(zone === z ? null : z); if (zone === z) { setZipInput(""); setZipResult(null); } }} label={`${z}`} />))}
+                    </div>
+                  </FilterBlock>
+                  <FilterBlock label="Plant Type">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {(Object.entries(PLANT_TYPE_LABELS) as [PlantType, string][]).map(([id, label]) => (
+                        <Pill key={id} active={types.includes(id)} onClick={() => tog(setTypes, id)} label={label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
+                      ))}
+                    </div>
+                  </FilterBlock>
+                </div>
+                <div>
+                  <FilterBlock label="Bloom Season">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {SEASONS.map((s) => (<Pill key={s.id} active={seasons.includes(s.id)} onClick={() => tog(setSeasons, s.id)} label={s.label} activeColor={s.color} activeBg={`${s.color}18`} />))}
+                    </div>
+                  </FilterBlock>
+                  <FilterBlock label="Popular Traits">
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                      {[
+                        { label: "Deer Resistant", bonus: "deer-resistant" as BonusTrait },
+                        { label: "Pollinator", bonus: "pollinator" as BonusTrait },
+                        { label: "Low Maintenance", bonus: "low-maintenance" as BonusTrait },
+                        { label: "Cut Flowers", bonus: "cut-flower" as BonusTrait },
+                        { label: "Fragrant", bonus: "fragrant" as BonusTrait },
+                        { label: "Container", bonus: "container" as BonusTrait },
+                      ].map((col) => (
+                        <Pill key={col.bonus} active={bonuses.includes(col.bonus)} onClick={() => tog(setBonuses, col.bonus)} label={col.label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
+                      ))}
+                    </div>
+                  </FilterBlock>
+                </div>
+              </div>
+              {/* Color swatches row */}
+              <FilterBlock label="Bloom Color">
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center" }}>
+                  {BLOOM_COLORS.map((c) => (
+                    <button key={c.id} onClick={() => tog(setColors, c.id)} title={c.label} style={{ width: 34, height: 34, borderRadius: "50%", background: c.hex, padding: 0, border: colors.includes(c.id) ? "3px solid #1A1610" : c.id === "white" ? "1.5px solid #C8C0B4" : "1.5px solid transparent", transition: "all 0.2s", transform: colors.includes(c.id) ? "scale(1.12)" : "scale(1)", outline: colors.includes(c.id) ? "2px solid rgba(26,22,16,0.12)" : "none", outlineOffset: 3, cursor: "pointer" }} />
+                  ))}
+                </div>
+              </FilterBlock>
+              {/* Advanced filters */}
+              <div style={{ borderTop: "1px solid rgba(40,32,20,0.06)", marginTop: 4, paddingTop: 8 }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
                   <div>
-                    <FilterBlock label="Plant Type">
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                        {(Object.entries(PLANT_TYPE_LABELS) as [PlantType, string][]).map(([id, label]) => (
-                          <Pill key={id} active={types.includes(id)} onClick={() => tog(setTypes, id)} label={label} activeColor="var(--green)" activeBg="rgba(44,68,52,0.08)" />
-                        ))}
-                      </div>
-                    </FilterBlock>
                     <FilterBlock label="Sunlight" defaultOpen={false}>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                         {(Object.entries(SUN_LABELS) as [SunLevel, { label: string; sub: string; icon: string }][]).map(([id, s]) => (
@@ -556,46 +532,55 @@ export default function BrowsePage() {
                   </div>
                 </div>
               </div>
-            )}
-          </div>
+              {/* Active filter summary + clear */}
+              {activeCount > 0 && (
+                <div style={{ borderTop: "1px solid rgba(44,68,52,0.06)", padding: "8px 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                  {filterTags.map((tag, i) => (
+                    <span key={i} className="font-mono" style={{ fontSize: 10, color: "#5A4E3E", padding: "2px 8px", background: "rgba(44,68,52,0.05)", border: "1px solid rgba(44,68,52,0.08)" }}>{tag}</span>
+                  ))}
+                  <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", marginLeft: 4 }}>Clear all</button>
+                </div>
+              )}
+            </div>
+          )}
 
-          {/* Active filter summary + clear */}
-          {activeCount > 0 && (
-            <div style={{ borderTop: "1px solid rgba(44,68,52,0.06)", padding: "8px 0", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-              {filterTags.map((tag, i) => (
-                <span key={i} className="font-mono" style={{ fontSize: 10, color: "#5A4E3E", padding: "2px 8px", background: "rgba(44,68,52,0.05)", border: "1px solid rgba(44,68,52,0.08)" }}>{tag}</span>
+          {/* Active filters when panel is closed */}
+          {!filtersOpen && activeCount > 0 && (
+            <div style={{ padding: "6px 0 2px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, flexWrap: "wrap" }}>
+              {filterTags.slice(0, 5).map((tag, i) => (
+                <span key={i} className="font-mono" style={{ fontSize: 10, color: "var(--green)", padding: "2px 8px", background: "rgba(44,68,52,0.05)", border: "1px solid rgba(44,68,52,0.08)" }}>{tag}</span>
               ))}
-              <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", marginLeft: 4 }}>Clear all</button>
+              {filterTags.length > 5 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 5}</span>}
+              <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>Clear</button>
             </div>
           )}
 
           {/* Results bar */}
-          <div ref={resultsRef} className="results-bar" style={{ padding: "14px 0", scrollMarginTop: 70, display: "flex", alignItems: "center", justifyContent: "center", gap: 12, flexWrap: "wrap" }}>
+          <div ref={resultsRef} className="results-bar" style={{ padding: "14px 0", scrollMarginTop: 70, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
               <span className="font-serif" style={{ fontSize: 22, fontWeight: 700, color: "#1A1610" }}>{sorted.length}</span>
               <span className="font-serif" style={{ fontSize: 15, fontWeight: 500, color: "#5A4E3E" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
-              {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>Clear ({activeCount})</button>}
             </div>
             <span style={{ color: "#C8C0B4" }}>·</span>
             {/* Sort */}
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
               {SORT_OPTIONS.map((opt) => (
                 <button key={opt.id} onClick={() => setSortBy(opt.id)} className="font-mono" style={{
-                  fontSize: 10, padding: "3px 8px", cursor: "pointer", transition: "all 0.2s",
+                  fontSize: 12, padding: "5px 10px", cursor: "pointer", transition: "all 0.2s",
                   border: sortBy === opt.id ? "1px solid var(--green)" : "1px solid transparent",
                   background: sortBy === opt.id ? "rgba(44,68,52,0.06)" : "transparent",
                   color: sortBy === opt.id ? "var(--green)" : "#8A7E6E",
-                  fontWeight: sortBy === opt.id ? 500 : 400,
+                  fontWeight: sortBy === opt.id ? 600 : 400,
                 }}>{opt.label}</button>
               ))}
             </div>
             <span style={{ color: "#C8C0B4" }}>·</span>
             {/* View toggle */}
             <div style={{ display: "flex", gap: 0 }}>
-              <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 10, padding: "5px 12px", border: "1px solid rgba(40,32,20,0.10)", borderRight: "none", background: view === "grid" ? "var(--green)" : "transparent", color: view === "grid" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s" }}>
+              <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 12, padding: "5px 14px", border: "1px solid rgba(40,32,20,0.12)", borderRight: "none", background: view === "grid" ? "var(--green)" : "transparent", color: view === "grid" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s", fontWeight: view === "grid" ? 600 : 400 }}>
                 Grid
               </button>
-              <button onClick={() => setView("calendar")} className="font-mono" style={{ fontSize: 10, padding: "5px 12px", border: "1px solid rgba(40,32,20,0.10)", background: view === "calendar" ? "var(--green)" : "transparent", color: view === "calendar" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s" }}>
+              <button onClick={() => setView("calendar")} className="font-mono" style={{ fontSize: 12, padding: "5px 14px", border: "1px solid rgba(40,32,20,0.12)", background: view === "calendar" ? "var(--green)" : "transparent", color: view === "calendar" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s", fontWeight: view === "calendar" ? 600 : 400 }}>
                 Calendar
               </button>
             </div>
