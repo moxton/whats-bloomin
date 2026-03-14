@@ -361,7 +361,7 @@ export default function BrowsePage() {
             padding: "20px 20px 16px",
           }}>
             <div style={{ textAlign: "center", marginBottom: 16 }}>
-              <span className="font-serif" style={{ fontSize: 18, color: "#2C4434", fontWeight: 600, fontStyle: "italic" }}>
+              <span className="font-serif" style={{ fontSize: 22, color: "#2C4434", fontWeight: 700, fontStyle: "italic" }}>
                 Blooming Now{zone ? ` in Zone ${zone}` : ""}
               </span>
             </div>
@@ -404,9 +404,10 @@ export default function BrowsePage() {
         </div>
       )}
 
-      {/* ═══ CURATED COLLECTIONS ═══ */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
-        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, justifyContent: "center", flexWrap: "wrap" }}>
+      {/* ═══ POPULAR COLLECTIONS ═══ */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 14px`, textAlign: "center" }}>
+        <span className="font-serif" style={{ fontSize: 13, color: "#8A7E6E", fontStyle: "italic", display: "block", marginBottom: 10 }}>Popular collections</span>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
           {[
             { label: "Deer Resistant", bonus: "deer-resistant" as BonusTrait },
             { label: "Pollinator Garden", bonus: "pollinator" as BonusTrait },
@@ -414,27 +415,29 @@ export default function BrowsePage() {
             { label: "Cut Flowers", bonus: "cut-flower" as BonusTrait },
             { label: "Fragrant", bonus: "fragrant" as BonusTrait },
             { label: "Container Friendly", bonus: "container" as BonusTrait },
-          ].map((col) => (
-            <button
-              key={col.bonus}
-              onClick={() => {
-                clearAll();
-                setBonuses([col.bonus]);
-                setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
-              }}
-              className="font-mono"
-              style={{
-                fontSize: 11, padding: "8px 16px", letterSpacing: 0.5, textTransform: "uppercase" as const,
-                background: bonuses.includes(col.bonus) ? "rgba(44,68,52,0.08)" : "#FDFBF7",
-                border: bonuses.includes(col.bonus) ? "1px solid var(--green)" : "1px solid rgba(40,32,20,0.08)",
-                color: bonuses.includes(col.bonus) ? "var(--green)" : "#5A4E3E",
-                cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap",
-                fontWeight: bonuses.includes(col.bonus) ? 600 : 400,
-              }}
-            >
-              {col.label}
-            </button>
-          ))}
+          ].map((col) => {
+            const isActive = bonuses.length === 1 && bonuses.includes(col.bonus);
+            return (
+              <button
+                key={col.bonus}
+                onClick={() => {
+                  if (isActive) { clearAll(); } else { clearAll(); setBonuses([col.bonus]); }
+                  setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+                }}
+                className="font-serif"
+                style={{
+                  fontSize: 14, padding: "6px 14px",
+                  background: isActive ? "var(--green)" : "transparent",
+                  border: "none", borderBottom: isActive ? "none" : "1px solid rgba(40,32,20,0.15)",
+                  color: isActive ? "#EDE8DE" : "#3E3628",
+                  cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap",
+                  fontWeight: isActive ? 600 : 400,
+                }}
+              >
+                {col.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
