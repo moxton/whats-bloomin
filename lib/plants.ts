@@ -120,7 +120,7 @@ const PLANT_IMAGE_SLUGS = new Set([
 ]);
 
 export function plantImageUrl(slug: string): string | null {
-  return PLANT_IMAGE_SLUGS.has(slug) ? `/plants/${slug}.png` : null;
+  return PLANT_IMAGE_SLUGS.has(slug) ? `/plants/${slug}.webp` : null;
 }
 
 export function formatHeight(p: Plant): string {

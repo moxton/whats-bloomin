@@ -15,6 +15,9 @@
   margin: 0;
 }
 
+.blooming-scroll::-webkit-scrollbar { display: none; }
+.blooming-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
 body {
   font-size: 16px;
 }

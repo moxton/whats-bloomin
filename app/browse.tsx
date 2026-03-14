@@ -81,19 +81,18 @@ function PlantCard({ plant, index }: { plant: Plant; index: number }) {
         {isBloomingNow && (
           <span className="font-mono" style={{ position: "absolute", bottom: 22, left: 12, fontSize: 9, color: "#fff", background: "var(--green)", padding: "2px 8px", letterSpacing: 0.5 }}>Blooming now</span>
         )}
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 16, display: "flex", alignItems: "center", padding: "0 12px", gap: 2, background: "rgba(253,251,247,0.5)" }}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 20, display: "flex", alignItems: "center", padding: "0 10px", gap: 2, background: "rgba(253,251,247,0.7)" }}>
           {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: plant.bloomMonths.includes(i + 1) ? pc : "rgba(40,32,20,0.06)", opacity: plant.bloomMonths.includes(i + 1) ? 0.6 : 1 }} />
+            <div key={i} style={{ flex: 1, height: 5, borderRadius: 3, background: plant.bloomMonths.includes(i + 1) ? pc : "rgba(40,32,20,0.06)", opacity: plant.bloomMonths.includes(i + 1) ? 0.75 : 1 }} />
           ))}
         </div>
       </div>
       <div style={{ padding: "16px 18px 18px" }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 2 }}>
-          <h3 className="font-serif" style={{ fontSize: 23, fontWeight: 600, color: "#1A1610", lineHeight: 1.15 }}>{plant.name}</h3>
+        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 6 }}>
+          <h3 className="font-serif" style={{ fontSize: 24, fontWeight: 700, color: "#1A1610", lineHeight: 1.15 }}>{plant.name}</h3>
           <span className="font-mono" style={{ fontSize: 11, color: "#6A5E4E" }}>{formatHeight(plant)}</span>
         </div>
-        <p className="font-mono" style={{ fontSize: 11, color: "#7A6E5E", margin: "1px 0 10px", fontStyle: "italic" }}>{plant.botanical}</p>
-        <p className="font-serif" style={{ fontSize: 16, color: "#332C22", margin: "0 0 12px", lineHeight: 1.6 }}>{plant.desc}</p>
+        <p className="font-serif" style={{ fontSize: 15, color: "#3E3628", margin: "0 0 12px", lineHeight: 1.55 }}>{plant.desc}</p>
         <div style={{ display: "flex", gap: 10, marginBottom: 12, flexWrap: "wrap" }}>
           <span className="font-mono" style={{ fontSize: 11, color: "#5A4E3E" }}>{sunIcons} {plant.sun.map((s) => SUN_LABELS[s]?.label).join(" / ")}</span>
           <span className="font-mono" style={{ fontSize: 11, color: "#5A4E3E" }}>{plant.water.charAt(0).toUpperCase() + plant.water.slice(1)}</span>
@@ -198,8 +197,9 @@ export default function BrowsePage() {
   const [view, setView] = useState<"grid" | "calendar">("grid");
   const [sortBy, setSortBy] = useState<SortOption>("a-z");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [showStickyFilters, setShowStickyFilters] = useState(false);
 
   const filterPanelRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -259,16 +259,22 @@ export default function BrowsePage() {
   const bloomingNow = useMemo(() => {
     return PLANTS.filter((p) => {
       if (zone && !p.zones.includes(zone)) return false;
-      return p.bloomMonths.includes(CURRENT_MONTH);
-    }).slice(0, 6);
+      return p.bloomMonths.includes(CURRENT_MONTH) && plantImageUrl(p.slug);
+    }).slice(0, 8);
   }, [zone]);
 
-  // Back to top visibility
+  // Back to top + sticky filter bar visibility
   useEffect(() => {
-    const onScroll = () => setShowBackToTop(window.scrollY > 400);
+    const onScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+      if (resultsRef.current) {
+        const rect = resultsRef.current.getBoundingClientRect();
+        setShowStickyFilters(rect.top < 0 && activeCount > 0);
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [activeCount]);
 
 
   const px = "clamp(18px, 4vw, 48px)";
@@ -346,41 +352,91 @@ export default function BrowsePage() {
         </div>
       </header>
 
-      {/* ═══ SEASONAL URGENCY ═══ */}
+      {/* ═══ BLOOMING NOW - watercolor cards ═══ */}
       {bloomingNow.length > 0 && (
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 16px` }}>
           <div style={{
-            background: "linear-gradient(135deg, rgba(212,137,155,0.06) 0%, rgba(196,164,48,0.06) 35%, rgba(90,138,90,0.06) 65%, rgba(91,135,168,0.06) 100%)",
-            border: "1px solid rgba(44,68,52,0.10)",
-            padding: "16px 24px 14px",
-            display: "flex", flexDirection: "column", alignItems: "center", gap: 10,
+            background: "linear-gradient(135deg, rgba(212,137,155,0.05) 0%, rgba(196,164,48,0.05) 35%, rgba(90,138,90,0.05) 65%, rgba(91,135,168,0.05) 100%)",
+            border: "1px solid rgba(44,68,52,0.08)",
+            padding: "20px 20px 16px",
           }}>
-            <span className="font-serif" style={{ fontSize: 15, color: "#2C4434", fontWeight: 600, fontStyle: "italic", letterSpacing: 0.5 }}>
-              Blooming Now{zone ? ` in Zone ${zone}` : ""}
-            </span>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+            <div style={{ textAlign: "center", marginBottom: 16 }}>
+              <span className="font-serif" style={{ fontSize: 18, color: "#2C4434", fontWeight: 600, fontStyle: "italic" }}>
+                Blooming Now{zone ? ` in Zone ${zone}` : ""}
+              </span>
+            </div>
+            <div style={{ display: "flex", gap: 12, overflowX: "auto", paddingBottom: 8, scrollSnapType: "x mandatory", WebkitOverflowScrolling: "touch" }} className="blooming-scroll">
               {bloomingNow.map((p) => {
-                const rawColor = p.colors[0] ? BLOOM_COLOR_HEX[p.colors[0]] : "#5A8A5A";
-                const color = rawColor === "#F0ECE4" ? (p.colors[1] ? BLOOM_COLOR_HEX[p.colors[1]] : "#5A8A5A") : rawColor;
+                const pc = BLOOM_COLOR_HEX[p.colors[0]] || "#5A8A5A";
+                const imgUrl = plantImageUrl(p.slug);
                 return (
-                  <Link key={p.slug} href={`/plants/${p.slug}`} className="font-serif blooming-pill" style={{
-                    fontSize: 14, color: color, textDecoration: "none",
-                    padding: "4px 12px",
-                    background: `${color}12`,
-                    border: `1px solid ${color}30`,
-                    borderRadius: 20,
-                    fontWeight: 500,
-                    transition: "all 0.2s",
-                  }}>
-                    {p.name}
+                  <Link key={p.slug} href={`/plants/${p.slug}`} style={{
+                    flex: "0 0 130px", scrollSnapAlign: "start",
+                    textDecoration: "none", color: "inherit",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                    transition: "transform 0.2s",
+                  }} className="hover:-translate-y-1">
+                    <div style={{
+                      width: 110, height: 110, borderRadius: "50%",
+                      overflow: "hidden",
+                      border: `2px solid ${pc}40`,
+                      boxShadow: `0 2px 12px ${pc}18`,
+                      background: "#FDFBF7",
+                    }}>
+                      {imgUrl && <img src={imgUrl} alt={p.name} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                    </div>
+                    <span className="font-serif" style={{ fontSize: 13, fontWeight: 600, color: "#1A1610", textAlign: "center", lineHeight: 1.2 }}>{p.name}</span>
+                    <div style={{ display: "flex", gap: 3 }}>
+                      {p.colors.slice(0, 3).map((c) => (
+                        <div key={c} style={{ width: 8, height: 8, borderRadius: "50%", background: BLOOM_COLOR_HEX[c], border: c === "white" ? "1px solid #CCC5B8" : "none" }} />
+                      ))}
+                    </div>
                   </Link>
                 );
               })}
-              {bloomingNow.length >= 6 && <button onClick={() => { const season = getSeasonForMonth(CURRENT_MONTH); if (season) setSeasons([season]); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }} className="font-mono" style={{ fontSize: 11, color: "var(--green)", textDecoration: "underline", textUnderlineOffset: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 8px" }}>See all &#8594;</button>}
+            </div>
+            <div style={{ textAlign: "center", marginTop: 8 }}>
+              <button onClick={() => { const season = getSeasonForMonth(CURRENT_MONTH); if (season) setSeasons([season]); setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100); }} className="font-mono" style={{ fontSize: 11, color: "var(--green)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", textUnderlineOffset: 3, padding: "4px 8px" }}>
+                See all blooming now &#8594;
+              </button>
             </div>
           </div>
         </div>
       )}
+
+      {/* ═══ CURATED COLLECTIONS ═══ */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px} 12px` }}>
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, justifyContent: "center", flexWrap: "wrap" }}>
+          {[
+            { label: "🦌 Deer Resistant", bonus: "deer-resistant" as BonusTrait },
+            { label: "🦋 Pollinator Garden", bonus: "pollinator" as BonusTrait },
+            { label: "🌿 Low Maintenance", bonus: "low-maintenance" as BonusTrait },
+            { label: "✂️ Cut Flowers", bonus: "cut-flower" as BonusTrait },
+            { label: "🌺 Fragrant", bonus: "fragrant" as BonusTrait },
+            { label: "🏺 Container Friendly", bonus: "container" as BonusTrait },
+          ].map((col) => (
+            <button
+              key={col.bonus}
+              onClick={() => {
+                clearAll();
+                setBonuses([col.bonus]);
+                setTimeout(() => resultsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+              }}
+              className="font-serif"
+              style={{
+                fontSize: 13, padding: "8px 16px",
+                background: bonuses.includes(col.bonus) ? "rgba(44,68,52,0.08)" : "#FDFBF7",
+                border: bonuses.includes(col.bonus) ? "1px solid var(--green)" : "1px solid rgba(40,32,20,0.08)",
+                color: bonuses.includes(col.bonus) ? "var(--green)" : "#3E3628",
+                cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap",
+                fontWeight: bonuses.includes(col.bonus) ? 600 : 400,
+              }}
+            >
+              {col.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {/* ═══ FILTER HEADER BAR - full-width toggle, always visible ═══ */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: `0 ${px}` }}>
@@ -557,6 +613,27 @@ export default function BrowsePage() {
             </p>
           )}
         </div>
+      </div>
+
+      {/* ═══ STICKY FILTER BAR ═══ */}
+      <div style={{
+        position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+        background: "rgba(242,237,229,0.95)", backdropFilter: "blur(8px)",
+        borderBottom: "1px solid rgba(40,32,20,0.08)",
+        padding: "8px 20px",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8, flexWrap: "wrap",
+        transform: showStickyFilters ? "translateY(0)" : "translateY(-100%)",
+        transition: "transform 0.25s ease",
+        pointerEvents: showStickyFilters ? "auto" : "none",
+      }}>
+        <span className="font-serif" style={{ fontSize: 16, fontWeight: 700, color: "#1A1610" }}>{sorted.length}</span>
+        <span className="font-serif" style={{ fontSize: 14, color: "#3E3628" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
+        <span style={{ color: "#A09484", margin: "0 4px" }}>·</span>
+        {filterTags.slice(0, 4).map((tag, i) => (
+          <span key={i} className="font-mono" style={{ fontSize: 10, color: "var(--green)", padding: "2px 8px", background: "rgba(44,68,52,0.06)", border: "1px solid rgba(44,68,52,0.10)" }}>{tag}</span>
+        ))}
+        {filterTags.length > 4 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 4}</span>}
+        <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", marginLeft: 4 }}>Clear all</button>
       </div>
 
       {/* ═══ CONTENT ═══ */}
