@@ -411,33 +411,54 @@ export default function BrowsePage() {
           border: "1px solid rgba(44,68,52,0.08)",
           padding: "20px 20px 0",
         }}>
-          {/* Section title + filter toggle inline */}
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: 16, marginBottom: 10 }}>
+          {/* Section title */}
+          <div style={{ textAlign: "center", marginBottom: 12 }}>
             <span className="font-serif" style={{ fontSize: 22, color: "#2C4434", fontWeight: 700, fontStyle: "italic" }}>
               Browse All
             </span>
+          </div>
+
+          {/* ── Filter bar (full-width, expandable) ── */}
+          <div style={{ margin: "0 -20px", borderTop: "1px solid rgba(44,68,52,0.06)", borderBottom: filtersOpen ? "none" : "1px solid rgba(44,68,52,0.06)" }}>
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className="font-mono"
               style={{
-                background: "none", border: "none", cursor: "pointer",
-                display: "flex", alignItems: "center", gap: 5,
-                fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 500,
-                color: filtersOpen ? "var(--green)" : "#8A7E6E",
-                padding: "2px 0",
-                borderBottom: filtersOpen ? "1.5px solid var(--green)" : "1px solid transparent",
+                width: "100%", cursor: "pointer",
+                background: filtersOpen ? "rgba(44,68,52,0.03)" : "transparent",
+                border: "none",
+                padding: "10px 20px",
+                display: "flex", alignItems: "center", gap: 8,
                 transition: "all 0.2s",
               }}
             >
-              <span style={{ fontSize: 9, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
-              Filters
-              {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 9, fontWeight: 600, letterSpacing: 0 }}>{activeCount}</span>}
+              <span className="font-mono" style={{
+                fontSize: 12, letterSpacing: 2, textTransform: "uppercase", fontWeight: 600,
+                color: filtersOpen ? "var(--green)" : "#5A4E3E",
+                display: "flex", alignItems: "center", gap: 6,
+              }}>
+                <span style={{ fontSize: 10, display: "inline-block", transition: "transform 0.2s", transform: filtersOpen ? "rotate(90deg)" : "rotate(0)" }}>▸</span>
+                Filters
+                {activeCount > 0 && <span style={{ background: "var(--green)", color: "#EDE8DE", padding: "1px 6px", fontSize: 9, fontWeight: 600, letterSpacing: 0 }}>{activeCount}</span>}
+              </span>
+              {!filtersOpen && filterTags.length > 0 && (
+                <div style={{ display: "flex", alignItems: "center", gap: 5, flexWrap: "wrap", flex: 1 }}>
+                  {filterTags.slice(0, 5).map((tag, i) => (
+                    <span key={i} className="font-mono" style={{ fontSize: 10, color: "var(--green)", padding: "2px 8px", background: "rgba(44,68,52,0.05)", border: "1px solid rgba(44,68,52,0.08)" }}>{tag}</span>
+                  ))}
+                  {filterTags.length > 5 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 5}</span>}
+                </div>
+              )}
+              {!filtersOpen && activeCount > 0 && (
+                <span
+                  onClick={(e) => { e.stopPropagation(); clearAll(); }}
+                  className="font-mono"
+                  style={{ fontSize: 10, color: "#7A6E5E", textDecoration: "underline", textUnderlineOffset: 2, marginLeft: "auto" }}
+                >Clear</span>
+              )}
             </button>
           </div>
-
-          {/* ── Filters panel (expandable) ── */}
           {filtersOpen && (
-            <div ref={filterPanelRef} style={{ borderTop: "1px solid rgba(44,68,52,0.06)", padding: "12px 0 4px" }}>
+            <div ref={filterPanelRef} style={{ margin: "0 -20px", padding: "12px 20px 4px", background: "rgba(44,68,52,0.02)", borderBottom: "1px solid rgba(44,68,52,0.06)" }}>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 380px), 1fr))", gap: "0 28px" }}>
                 <div>
                   <FilterBlock label="Your Zone">
@@ -541,17 +562,6 @@ export default function BrowsePage() {
                   <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", marginLeft: 4 }}>Clear all</button>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Active filters when panel is closed */}
-          {!filtersOpen && activeCount > 0 && (
-            <div style={{ padding: "6px 0 2px", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, flexWrap: "wrap" }}>
-              {filterTags.slice(0, 5).map((tag, i) => (
-                <span key={i} className="font-mono" style={{ fontSize: 10, color: "var(--green)", padding: "2px 8px", background: "rgba(44,68,52,0.05)", border: "1px solid rgba(44,68,52,0.08)" }}>{tag}</span>
-              ))}
-              {filterTags.length > 5 && <span className="font-mono" style={{ fontSize: 10, color: "#8A7E6E" }}>+{filterTags.length - 5}</span>}
-              <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer" }}>Clear</button>
             </div>
           )}
 
