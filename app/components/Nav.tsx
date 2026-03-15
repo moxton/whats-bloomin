@@ -8,6 +8,7 @@ import { RAINBOW } from "@/lib/plants";
 export default function Nav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -15,6 +16,9 @@ export default function Nav() {
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Close menu on route change
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   const isHome = pathname === "/";
 
@@ -46,7 +50,7 @@ export default function Nav() {
           maxWidth: 1400,
           margin: "0 auto",
           padding: "0 clamp(18px, 4vw, 48px)",
-          height: 56,
+          height: 48,
           display: "flex",
           alignItems: "center",
           justifyContent: isHome ? "center" : "space-between",
@@ -54,11 +58,11 @@ export default function Nav() {
       >
         {/* Logo - hidden on homepage where it's shown large and centered in the hero */}
         {!isHome && (
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
             <div
               style={{
-                width: 32,
-                height: 32,
+                width: 28,
+                height: 28,
                 borderRadius: "50%",
                 background: `conic-gradient(${RAINBOW.map((c, i) => `${c} ${i * 45}deg ${(i + 1) * 45}deg`).join(", ")})`,
                 display: "flex",
@@ -69,8 +73,8 @@ export default function Nav() {
             >
               <div
                 style={{
-                  width: 24,
-                  height: 24,
+                  width: 20,
+                  height: 20,
                   borderRadius: "50%",
                   background: "#F2EDE5",
                   display: "flex",
@@ -78,17 +82,17 @@ export default function Nav() {
                   justifyContent: "center",
                 }}
               >
-                <span style={{ fontSize: 12 }}>✿</span>
+                <span style={{ fontSize: 10 }}>✿</span>
               </div>
             </div>
-            <span className="font-serif" style={{ fontSize: 20, fontWeight: 700, color: "#1A1610" }}>
+            <span className="font-serif nav-logo-text" style={{ fontSize: 18, fontWeight: 700, color: "#1A1610" }}>
               What&apos;s Bloomin&apos;
             </span>
           </Link>
         )}
 
-        {/* Nav links */}
-        <div style={{ display: "flex", gap: 24, alignItems: "center" }}>
+        {/* Desktop nav links */}
+        <div className="nav-links-desktop" style={{ display: "flex", gap: 24, alignItems: "center" }}>
           {links.map((link) => (
             <Link
               key={link.href}
@@ -108,7 +112,48 @@ export default function Nav() {
             </Link>
           ))}
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          className="nav-hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            display: "none", background: "none", border: "none", cursor: "pointer",
+            padding: 6, color: "#5A4E3E", fontSize: 20, lineHeight: 1,
+          }}
+          aria-label="Menu"
+        >
+          {menuOpen ? "\u2715" : "\u2630"}
+        </button>
       </div>
+
+      {/* Mobile dropdown */}
+      {menuOpen && (
+        <div className="nav-mobile-menu" style={{
+          padding: "8px clamp(18px, 4vw, 48px) 16px",
+          borderTop: "1px solid rgba(40,32,20,0.06)",
+          display: "flex", flexDirection: "column", gap: 12,
+        }}>
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="font-mono"
+              style={{
+                fontSize: 12,
+                letterSpacing: 1.5,
+                textTransform: "uppercase",
+                textDecoration: "none",
+                color: isActive(link.href) ? "var(--green)" : "#5A4E3E",
+                fontWeight: isActive(link.href) ? 500 : 400,
+                padding: "4px 0",
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }

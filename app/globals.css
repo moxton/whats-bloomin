@@ -133,3 +133,14 @@ body {
   opacity: 0;
   overflow: hidden;
 }
+
+/* ── Mobile nav hamburger ── */
+@media (max-width: 600px) {
+  .nav-links-desktop { display: none !important; }
+  .nav-hamburger { display: block !important; }
+  .nav-logo-text { font-size: 16px !important; }
+}
+@media (min-width: 601px) {
+  .nav-hamburger { display: none !important; }
+  .nav-mobile-menu { display: none !important; }
+}

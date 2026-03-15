@@ -566,33 +566,34 @@ export default function BrowsePage() {
           )}
 
           {/* Results bar */}
-          <div ref={resultsRef} className="results-bar" style={{ padding: "14px 0", scrollMarginTop: 70, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-              <span className="font-serif" style={{ fontSize: 22, fontWeight: 700, color: "#1A1610" }}>{sorted.length}</span>
-              <span className="font-serif" style={{ fontSize: 15, fontWeight: 500, color: "#5A4E3E" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
+          <div ref={resultsRef} className="results-bar" style={{ padding: "12px 0", scrollMarginTop: 70 }}>
+            {/* Top row: count + view toggle */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 5 }}>
+                <span className="font-serif" style={{ fontSize: 20, fontWeight: 700, color: "#1A1610" }}>{sorted.length}</span>
+                <span className="font-serif" style={{ fontSize: 14, fontWeight: 500, color: "#5A4E3E" }}>plant{sorted.length !== 1 ? "s" : ""}</span>
+                {activeCount > 0 && <button onClick={clearAll} className="font-mono" style={{ fontSize: 10, color: "#7A6E5E", background: "none", border: "none", textDecoration: "underline", textUnderlineOffset: 2, cursor: "pointer", marginLeft: 4 }}>Clear ({activeCount})</button>}
+              </div>
+              <div style={{ display: "flex", gap: 0 }}>
+                <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 12, padding: "4px 12px", border: "1px solid rgba(40,32,20,0.12)", borderRight: "none", background: view === "grid" ? "var(--green)" : "transparent", color: view === "grid" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s", fontWeight: view === "grid" ? 600 : 400 }}>
+                  Grid
+                </button>
+                <button onClick={() => setView("calendar")} className="font-mono" style={{ fontSize: 12, padding: "4px 12px", border: "1px solid rgba(40,32,20,0.12)", background: view === "calendar" ? "var(--green)" : "transparent", color: view === "calendar" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s", fontWeight: view === "calendar" ? 600 : 400 }}>
+                  Calendar
+                </button>
+              </div>
             </div>
-            <span style={{ color: "#C8C0B4" }}>·</span>
-            {/* Sort */}
+            {/* Sort row */}
             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
               {SORT_OPTIONS.map((opt) => (
                 <button key={opt.id} onClick={() => setSortBy(opt.id)} className="font-mono" style={{
-                  fontSize: 12, padding: "5px 10px", cursor: "pointer", transition: "all 0.2s",
-                  border: sortBy === opt.id ? "1px solid var(--green)" : "1px solid transparent",
+                  fontSize: 12, padding: "4px 10px", cursor: "pointer", transition: "all 0.2s",
+                  border: sortBy === opt.id ? "1px solid var(--green)" : "1px solid rgba(40,32,20,0.08)",
                   background: sortBy === opt.id ? "rgba(44,68,52,0.06)" : "transparent",
                   color: sortBy === opt.id ? "var(--green)" : "#8A7E6E",
                   fontWeight: sortBy === opt.id ? 600 : 400,
                 }}>{opt.label}</button>
               ))}
-            </div>
-            <span style={{ color: "#C8C0B4" }}>·</span>
-            {/* View toggle */}
-            <div style={{ display: "flex", gap: 0 }}>
-              <button onClick={() => setView("grid")} className="font-mono" style={{ fontSize: 12, padding: "5px 14px", border: "1px solid rgba(40,32,20,0.12)", borderRight: "none", background: view === "grid" ? "var(--green)" : "transparent", color: view === "grid" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s", fontWeight: view === "grid" ? 600 : 400 }}>
-                Grid
-              </button>
-              <button onClick={() => setView("calendar")} className="font-mono" style={{ fontSize: 12, padding: "5px 14px", border: "1px solid rgba(40,32,20,0.12)", background: view === "calendar" ? "var(--green)" : "transparent", color: view === "calendar" ? "#EDE8DE" : "#8A7E6E", cursor: "pointer", transition: "all 0.2s", fontWeight: view === "calendar" ? 600 : 400 }}>
-                Calendar
-              </button>
             </div>
           </div>
         </div>

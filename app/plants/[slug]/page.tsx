@@ -195,6 +195,13 @@ export default function PlantPage({ params }: { params: { slug: string } }) {
             </div>
           </div>
         )}
+
+        {/* Back to browse */}
+        <div style={{ textAlign: "center", paddingTop: 8, paddingBottom: 8 }}>
+          <Link href="/" className="font-mono" style={{ fontSize: 12, color: "var(--green)", textDecoration: "none", border: "1px solid var(--green)", padding: "10px 28px", display: "inline-block", transition: "all 0.2s", letterSpacing: 0.5 }}>
+            &#8592; Browse all plants
+          </Link>
+        </div>
       </div>
 
       <Footer maxWidth={900} />
